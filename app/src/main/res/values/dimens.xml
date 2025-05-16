@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="textSizeMainMenu">22sp</dimen>
+    <dimen name="buttonRadius">16dp</dimen>
+    <dimen name="icon_padding_at_button">10dp</dimen>
+
+    <dimen name="settings_block_sizes">61dp</dimen>
+    <dimen name="settings_text_size">16sp</dimen>
+    <dimen name="settings_paddingLeft">16dp</dimen>
+    <dimen name="settings_paddingRight">12dp</dimen>
+</resources>
