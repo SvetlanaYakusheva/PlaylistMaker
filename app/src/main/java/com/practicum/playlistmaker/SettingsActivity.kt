@@ -3,8 +3,10 @@ package com.practicum.playlistmaker
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -18,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        val buttonShare = findViewById<ImageView>(R.id.share_button)
+        val buttonShare = findViewById<FrameLayout>(R.id.share_button)
         buttonShare.setOnClickListener {
             val message = resources.getString(R.string.shared_app_url)
             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -27,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
                 startActivity(shareIntent)
         }
 
-        val buttonSupport = findViewById<ImageView>(R.id.support_button)
+        val buttonSupport = findViewById<FrameLayout>(R.id.support_button)
         buttonSupport.setOnClickListener {
             val supportIntent = Intent(Intent.ACTION_SENDTO)
 
@@ -39,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        val buttonUserAgreement = findViewById<ImageView>(R.id.userAgreement_button)
+        val buttonUserAgreement = findViewById<FrameLayout>(R.id.userAgreement_button)
         buttonUserAgreement.setOnClickListener {
             val agreementIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.urlAgreement)))
 

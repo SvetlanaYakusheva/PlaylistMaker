@@ -57,20 +57,17 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("EDITTEXT_VALUE", editTextValue)
+        outState.putString(EDITTEXT_VALUE, editTextValue)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         editTextValue = savedInstanceState.getString(EDITTEXT_VALUE, EDITTEXT_VALUE_DEF)
-
-//        val inputEditText = findViewById<EditText>(R.id.inputEditText)
-//        inputEditText.setText(editTextValue)
-
     }
+
     companion object {
-        const val EDITTEXT_VALUE = "EDITTEXT_VALUE"
-        const val EDITTEXT_VALUE_DEF = ""
+        private const val EDITTEXT_VALUE = "EDITTEXT_VALUE"
+        private const val EDITTEXT_VALUE_DEF = ""
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {

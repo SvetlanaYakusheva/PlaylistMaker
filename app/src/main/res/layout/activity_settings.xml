@@ -57,12 +57,12 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/share_button"
             style="@style/FrameLayoutSettingsActivityStyle">
             <TextView
                 style="@style/TextViewSettingsActivityStyle"
                 android:text="@string/share"/>
             <ImageView
-                android:id="@+id/share_button"
                 style="@style/ImageViewSettingsActivityStyle"
                 android:contentDescription="@string/share"
                 android:src="@drawable/ic_share"
@@ -70,24 +70,24 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/support_button"
             style="@style/FrameLayoutSettingsActivityStyle">
             <TextView
                 style="@style/TextViewSettingsActivityStyle"
                 android:text="@string/support"/>
             <ImageView
-                android:id="@+id/support_button"
                 style="@style/ImageViewSettingsActivityStyle"
                 android:contentDescription="@string/support"
                 android:src="@drawable/ic_support" />
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/userAgreement_button"
             style="@style/FrameLayoutSettingsActivityStyle">
             <TextView
                 style="@style/TextViewSettingsActivityStyle"
                 android:text="@string/agreement"/>
             <ImageView
-                android:id="@+id/userAgreement_button"
                 style="@style/ImageViewSettingsActivityStyle"
                 android:contentDescription="@string/agreement"
                 android:src="@drawable/ic_arrow_forward" />
