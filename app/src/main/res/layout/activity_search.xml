@@ -16,12 +16,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:orientation="horizontal">
 
             <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
                 android:backgroundTint="?attr/colorSecondary"
                 android:contentDescription="@string/back_button"
                 android:scaleType="fitCenter"
@@ -41,49 +41,40 @@
                 android:textFontWeight="500"/>
         </LinearLayout>
         
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="36dp"
             android:orientation="horizontal"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:background="@drawable/rounded_edittext"
-            >
+            android:layout_marginTop="8dp">
             <EditText
                 android:id="@+id/inputEditText"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"
-
-
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="14dp"
                 android:hint="@string/search"
                 android:textColor="@color/black"
-                android:drawablePadding="10dp"
+                android:drawablePadding="5dp"
                 android:maxLines="1"
                 android:drawableStart="@drawable/ic_search"
                 android:textCursorDrawable="@drawable/cursor_blue"
                 android:inputType="text"
                 style="@style/SearchEditText"
-                android:background="@android:color/transparent">
-
-                <!--<requestFocus /> -->
-            </EditText>
-
+                android:background="@drawable/rounded_edittext"/>
 
             <ImageView
                 android:id="@+id/button_clear_searchActivity"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:src="@drawable/ic_clear"
                 android:visibility="gone"
                 style="@style/ClearButton"
                 android:contentDescription="@string/clear"/>
-
-        </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
