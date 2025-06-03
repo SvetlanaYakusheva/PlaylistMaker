@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- стиль для элементов экрана Настройки: иконки и переключатель Switch-->
+    <!-- в тч для реализации светлой/темной темы-->
+    <style name="ImageViewSettingsActivityStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:backgroundTint">?attr/colorSecondary</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="tint">?attr/colorOnSecondary</item>
+       <!-- <item name="android:checked">true</item>-->
+        <!--<item name="android:state_checked">true</item> -->
+        <!--<item name="thumbTint">@color/blue1</item> -->
+       <!-- <item name="trackTint">@color/blue_light</item> -->
+    </style>
+
+    <!--ночная тема для Switch -->
+    <style name="SwitchStyle">
+        <item name="android:layout_gravity">end</item>
+        <item name="android:checked">true</item>
+        <item name="thumbTint">@color/blue1</item>
+        <item name="trackTint">@color/blue_light</item>
+
+    </style>
+
+    <!-- стиль для EditText на экране Поиск -->
+    <!-- в тч для реализации светлой/темной темы-->
+    <style name="SearchEditText">
+        <item name="android:textColorHint">?attr/colorSecondary</item>
+        <item name="android:drawableTint">?attr/colorSecondary</item>
+    </style>
+
+    <!-- стиль для кнопки Очистить внутри EditText на экране Поиск -->
+    <!-- в тч для реализации светлой/темной темы-->
+    <style name="ClearButton">
+        <item name="android:tint">@color/black</item>
+    </style>
+</resources>
