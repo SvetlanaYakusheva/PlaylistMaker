@@ -9,11 +9,14 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue1</item>
 
+
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/white</item>
 
         <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondaryVariant">@color/black</item>
+
         <item name="colorTertiary">@color/grey_light</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/blue1</item>
