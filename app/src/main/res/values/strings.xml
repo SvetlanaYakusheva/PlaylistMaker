@@ -15,4 +15,8 @@
     <string name="urlAgreement">https://yandex.ru/legal/practicum_offer/</string>
     <string name="clear">Очистить</string>
 
+
+    <string name="name_of_song">Название песни</string>
+    <string name="name_of_artist">Исполнитель</string>
+    <string name="time_of_song">0:00</string>
 </resources>

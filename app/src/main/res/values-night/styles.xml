@@ -36,4 +36,15 @@
     <style name="ClearButton">
         <item name="android:tint">@color/black</item>
     </style>
+
+    <!-- стиль для текста с названием исполнителя и длительностью на экране Поиск -->
+    <!-- в тч для реализации светлой/темной темы-->
+    <style name="SearchArtistStyle">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:drawableTint">?attr/colorOnSecondary</item>
+        <item name="tint">?attr/colorOnSecondary</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
 </resources>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="61dp"
+    android:paddingStart="13dp"
+    android:paddingEnd="13dp"
+    android:orientation="horizontal"
+    >
+
+    <ImageView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:id="@+id/artWork"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="start"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="66dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="19dp"
+            android:id="@+id/trackName"
+            android:text="@string/name_of_song"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            android:fontFamily="@font/ys_display_regular"
+            android:textFontWeight="400"
+            android:textColor="?attr/colorSecondaryVariant"
+            android:layout_marginTop="14dp"
+            android:paddingEnd="24dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="13dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:id="@+id/artistName"
+                android:text="@string/name_of_artist"
+
+                android:ellipsize="end"
+                android:maxLines="1"
+                style="@style/SearchArtistStyle"/>
+            
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_dot"
+                style="@style/SearchArtistStyle"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/trackTime"
+                android:text="@string/time_of_song"
+                android:paddingEnd="24dp"
+
+                style="@style/SearchArtistStyle"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+
+        android:src="@drawable/ic_arrow_forward"
+        android:layout_gravity="end"
+        style="@style/SearchArtistStyle"/>
+</FrameLayout>
