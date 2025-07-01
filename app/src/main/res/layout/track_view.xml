@@ -12,6 +12,7 @@
         android:layout_height="45dp"
         android:id="@+id/artWork"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/album_cover"
         android:scaleType="fitCenter"
         android:layout_gravity="start"/>
 
@@ -40,7 +41,7 @@
             android:orientation="horizontal"
             android:layout_marginTop="2dp">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:id="@+id/artistName"
@@ -70,6 +71,7 @@
     <ImageView
         android:layout_width="24dp"
         android:layout_height="match_parent"
+        android:contentDescription="@string/forward"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
 
