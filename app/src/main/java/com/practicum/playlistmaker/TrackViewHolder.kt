@@ -23,9 +23,8 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView.context)
             .load(model.artworkUrl100)
             .centerCrop()
-            .transform(RoundedCorners(2))
-            .placeholder(R.drawable.baseline_music_note_24)
+            .transform(RoundedCorners(MyStaticClass.dpToPx(2f, itemView.context)))
+            .placeholder(R.drawable.ic_placeholder_45)
             .into(artWork)
     }
-
 }
