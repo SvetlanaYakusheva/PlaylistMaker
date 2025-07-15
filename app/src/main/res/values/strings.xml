@@ -19,4 +19,12 @@
     <string name="name_of_song">Название песни</string>
     <string name="name_of_artist">Исполнитель</string>
     <string name="time_of_song">0:00</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="something_went_wrong">Проблемы со связью</string>
+    <string name="something_went_wrong_description">Загрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="refresh">Обновить</string>
+
+    <string name="album_cover">Обложка альбома</string>
+    <string name="forward">Вперед</string>
+    <string name="error">Ошибка</string>
 </resources>
