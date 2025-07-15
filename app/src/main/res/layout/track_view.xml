@@ -2,10 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="61dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingStart="13dp"
     android:paddingEnd="13dp"
-    android:orientation="horizontal"
-    >
+    android:orientation="horizontal">
 
     <ImageView
         android:layout_width="45dp"
@@ -18,6 +18,7 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
+
         android:layout_height="match_parent"
         android:layout_marginStart="66dp"
         android:orientation="vertical">
@@ -45,7 +46,7 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:id="@+id/artistName"
-                android:text="@string/name_of_artist"
+                tools:text="@string/name_of_artist"
 
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -60,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/trackTime"
-                android:text="@string/time_of_song"
+                tools:text="@string/time_of_song"
                 android:paddingEnd="24dp"
 
                 style="@style/SearchArtistStyle"/>

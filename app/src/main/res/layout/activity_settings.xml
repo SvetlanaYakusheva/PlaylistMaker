@@ -40,7 +40,7 @@
                 android:textFontWeight="500"/>
         </LinearLayout>
 
-        <FrameLayout
+        <!--<FrameLayout
             style="@style/FrameLayoutSettingsActivityStyle">
             <TextView
                 style="@style/TextViewSettingsActivityStyle"
@@ -51,10 +51,14 @@
                 android:switchMinWidth="32dp"
                 app:showText="false"
                 style="@style/SwitchStyle"/>
-            <!-- android:id="@+id/switch_compat"-->
 
+        </FrameLayout> -->
 
-        </FrameLayout>
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/themeSwitcher"
+            android:text="@string/dark_theme"
+            style="@style/SwitchStyle"
+             />
 
         <FrameLayout
             android:id="@+id/share_button"

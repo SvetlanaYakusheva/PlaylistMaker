@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -28,7 +29,7 @@ import java.util.Locale
 
 class SearchActivity : AppCompatActivity() {
     private var editTextValue: String = ""
-    private var trackList = ArrayList<Track>()
+    private var trackList: MutableList<Track> = mutableListOf()
     private val iTunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
         .baseUrl(iTunesBaseUrl)
@@ -41,12 +42,17 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderMessageDescription: TextView
     private lateinit var refreshButton: Button
-    private var trackAdapter = TrackAdapter()
-    private var responseCode: Int = 0
 
+    private var trackAdapterSearchHistory = SearchHistoryAdapter()
+    private var responseCode: Int = 0
+    //val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+    private var trackAdapter = TrackAdapter(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+//        val trackAdapter = TrackAdapter(sharedPrefs)
 
         val buttonBackToMainActivity = findViewById<ImageButton>(R.id.back_button_SearchActivity)
         buttonBackToMainActivity.setOnClickListener {
@@ -65,6 +71,7 @@ class SearchActivity : AppCompatActivity() {
             search()
         }
 
+
         clearButton.setOnClickListener {
             inputEditText.setText("")
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -72,6 +79,21 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.clearFocus()
             clearState()
         }
+
+        //блок с историей поиска
+        val searchHistory = SearchHistory(sharedPrefs)
+        val searchHistoryLayout = findViewById<ViewGroup>(R.id.search_history_layout)
+        val clearHistoryButton = findViewById<Button>(R.id.button_clear_search_history)
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearHistory()
+            trackAdapterSearchHistory.notifyDataSetChanged()
+            searchHistoryLayout.visibility = View.GONE
+        }
+        val recyclerViewSearchHistory = findViewById<RecyclerView>(R.id.searchHistoryRecycler)
+        recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        trackAdapterSearchHistory.trackList = searchHistory.trackList
+        recyclerViewSearchHistory.adapter = trackAdapterSearchHistory
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -81,6 +103,14 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
                 editTextValue = s.toString()
+                 if (inputEditText.hasFocus() && s?.isEmpty() == true  && searchHistory.trackList.isNotEmpty()) {
+                     searchHistoryLayout.visibility = View.VISIBLE
+                     searchHistory.getSearchHistory()
+                     trackAdapterSearchHistory.notifyDataSetChanged()
+                } else {
+                     searchHistoryLayout.visibility = View.GONE
+                }
+
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -88,6 +118,12 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
+
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            searchHistoryLayout.visibility = if (hasFocus && inputEditText.text.isEmpty() && searchHistory.trackList.isNotEmpty()) View.VISIBLE else View.GONE
+            searchHistory.getSearchHistory()
+            trackAdapterSearchHistory.notifyDataSetChanged()
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -112,10 +148,14 @@ class SearchActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         //сохраняем введенное значение в EditText  при пересоздании экрана
         outState.putString(EDITTEXT_VALUE, editTextValue)
+
+
         //сохраняем список выведенных из запроса треков при пересоздании экрана
         val gson = Gson()
         val json = gson.toJson(trackList)
         outState.putString(TRACKLIST_TO_JSON, json)
+
+
         //сохраняем код ответа на запрос
         outState.putInt(RESPONSE_CODE, responseCode)
     }
@@ -124,6 +164,7 @@ class SearchActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         editTextValue = savedInstanceState.getString(EDITTEXT_VALUE, EDITTEXT_VALUE_DEF)
 
+
         val gson = Gson()
         val json = savedInstanceState.getString(TRACKLIST_TO_JSON, EDITTEXT_VALUE_DEF)
         val type = object : TypeToken<List<Track>>() {}.type
@@ -131,10 +172,14 @@ class SearchActivity : AppCompatActivity() {
         trackList.addAll(gson.fromJson(json, type))
         trackAdapter.notifyDataSetChanged()
 
+
+
         responseCode = savedInstanceState.getInt(RESPONSE_CODE)
         if (trackList.isEmpty() and editTextValue.isNotEmpty()) {
             processResponseCode(responseCode, trackList)
         }
+
+
     }
 
     companion object {
@@ -171,7 +216,7 @@ class SearchActivity : AppCompatActivity() {
             })
     }
 
-    private fun processResponseCode(responseCode: Int, responseList: ArrayList<Track>?) {
+    private fun processResponseCode(responseCode: Int, responseList: MutableList<Track>?) {
         when (responseCode) {
             200 -> {
                 trackList.clear()
