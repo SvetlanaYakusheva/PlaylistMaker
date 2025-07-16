@@ -5,15 +5,29 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        themeSwitcher.isChecked = (applicationContext as App).darkTheme
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            if (switcher.isPressed) {
+                (applicationContext as App).switchTheme(checked)
+                sharedPrefs.edit()
+                    .putBoolean(NIGHTMODE_KEY, checked)
+                    .apply()
+            } else {
+                themeSwitcher.isChecked = (applicationContext as App).darkTheme
+            }
+        }
+
 
         val buttonBackToMainActivity = findViewById<ImageButton>(R.id.back_button_SettingsActivity)
         buttonBackToMainActivity.setOnClickListener {
@@ -48,4 +62,5 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(agreementIntent)
         }
     }
+
 }

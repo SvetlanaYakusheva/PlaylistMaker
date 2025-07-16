@@ -27,4 +27,6 @@
     <string name="album_cover">Обложка альбома</string>
     <string name="forward">Вперед</string>
     <string name="error">Ошибка</string>
+    <string name="search_history">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>
