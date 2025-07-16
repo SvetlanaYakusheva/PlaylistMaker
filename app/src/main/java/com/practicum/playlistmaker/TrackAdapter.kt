@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import java.io.Serializable
 
-class TrackAdapter (val context: Context): RecyclerView.Adapter<TrackViewHolder> (), Serializable {
+class TrackAdapter (private val context: Context): RecyclerView.Adapter<TrackViewHolder> (), Serializable {
 
     var trackList: MutableList<Track> = mutableListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {

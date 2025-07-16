@@ -18,10 +18,14 @@ class SettingsActivity : AppCompatActivity() {
         themeSwitcher.isChecked = (applicationContext as App).darkTheme
         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-            sharedPrefs.edit()
-                .putBoolean(NIGHTMODE_KEY, checked)
-                .apply()
+            if (switcher.isPressed) {
+                (applicationContext as App).switchTheme(checked)
+                sharedPrefs.edit()
+                    .putBoolean(NIGHTMODE_KEY, checked)
+                    .apply()
+            } else {
+                themeSwitcher.isChecked = (applicationContext as App).darkTheme
+            }
         }
 
 

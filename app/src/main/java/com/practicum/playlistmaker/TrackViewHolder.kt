@@ -21,9 +21,7 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         trackName.text = model.trackName
         artistName.text = model.artistName
-        trackTime.text = model.trackTime
-
-        //trackTime.text = getDateFormat(model.trackTime)
+        trackTime.text = getDateFormat(model.trackTime)
 
         Glide.with(itemView.context)
             .load(model.artworkUrl100)
@@ -33,10 +31,10 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             .into(artWork)
     }
 }
-fun getDateFormat(s: String?) : String {
+fun getDateFormat(s: Long?) : String {
     if (s == null) return "00:00"
     return SimpleDateFormat(
         "mm:ss",
         Locale.getDefault()
-        ).format(s.toLong())
+        ).format(s)
 }

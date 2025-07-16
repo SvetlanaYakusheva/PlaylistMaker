@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
 const val NIGHTMODE_KEY = "key_for_night_mode"
@@ -13,10 +12,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         val sharedPreferences = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        //удаляем ключ с темой , чтобы проверять проблемную ситуацию -  учетом первого входа
-        sharedPreferences.edit()
-            .remove(NIGHTMODE_KEY)
-            .apply()
 
         darkTheme =
             sharedPreferences.getBoolean(NIGHTMODE_KEY, checkIfDarkThemeEnabledOnDevice())
