@@ -30,6 +30,7 @@ class SearchHistory (private val sharedPreferences: SharedPreferences) {
     fun getSearchHistory()  {
         trackList.clear()
         trackList.addAll(readFromSharedPreferences())
+
     }
 
     private fun readFromSharedPreferences() : Array<Track> {

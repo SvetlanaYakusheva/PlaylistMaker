@@ -11,3 +11,6 @@ fun dpToPx(dp: Float, context: Context): Int {
         ).toInt()
 }
 
+fun getCoverArtwork(imageCoverUrl: String) : String {
+    return imageCoverUrl.replaceAfterLast('/', "512x512bb.jpg")
+}
