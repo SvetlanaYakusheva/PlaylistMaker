@@ -115,6 +115,7 @@
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
+        <item name="android:layout_marginTop">16dp</item>
     </style>
 
     <style name="TrackInfoAudioPlayerActivity">
@@ -124,6 +125,7 @@
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
+        <item name="android:layout_marginTop">16dp</item>
     </style>
 
 </resources>
