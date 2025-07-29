@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.content.SharedPreferences
 import com.google.gson.Gson
 
+
 class SearchHistory (private val sharedPreferences: SharedPreferences) {
     var trackList: MutableList<Track> = mutableListOf()
 
@@ -30,6 +31,13 @@ class SearchHistory (private val sharedPreferences: SharedPreferences) {
     fun getSearchHistory()  {
         trackList.clear()
         trackList.addAll(readFromSharedPreferences())
+//        // mock - объект для проверки пустых полей
+//        trackList.add(0, Track(111, "song1", "artist",4540,"url",null,null,"rock","russia"))
+//        trackList.add(1, Track(222, "song2", "artist",4540,"url",null,"1988","rock","russia"))
+//        trackList.add(2, Track(333, "song3", "artist",4540,"url","album",null,"rock","russia"))
+//        trackList.add(3, Track(333, "song4", "artist",4540,"url","album","Э22222","rock","russia"))
+
+
     }
 
     private fun readFromSharedPreferences() : Array<Track> {
