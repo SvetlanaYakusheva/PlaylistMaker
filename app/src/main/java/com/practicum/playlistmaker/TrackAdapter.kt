@@ -29,7 +29,8 @@ class TrackAdapter (private val context: Context): RecyclerView.Adapter<TrackVie
             searchHistory.addTrackToSearchHistory(trackList[position])
             // открытие экрана Аудиоплеера при нажатии на трек в списке
             val audioPlayerIntent = Intent(context, AudioPlayerActivity::class.java)
-            audioPlayerIntent.putExtra(AudioPlayerActivity.KEY_TRACK_TO_AUDIOPLAYER_JSON, Gson().toJson(trackList[position]))
+            //audioPlayerIntent.putExtra(AudioPlayerActivity.KEY_TRACK_TO_AUDIOPLAYER_JSON, Gson().toJson(trackList[position]))
+            audioPlayerIntent.putExtra(AudioPlayerActivity.KEY_TRACK_TO_AUDIOPLAYER,trackList[position])
             context.startActivity(audioPlayerIntent)
         }
     }
