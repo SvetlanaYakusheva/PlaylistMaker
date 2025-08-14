@@ -38,9 +38,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderMessageDescription: TextView
     private lateinit var refreshButton: Button
 
-    private var trackAdapterSearchHistory = SearchHistoryAdapter()
     private var responseCode: Int = 0
     private var trackAdapter = TrackAdapter(this)
+        private var trackAdapterSearchHistory = TrackAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -221,6 +221,7 @@ class SearchActivity : AppCompatActivity() {
                     trackList.addAll(responseList)
                     placeholderImage.visibility = View.GONE
                     placeholderMessage.visibility = View.GONE
+
                 } else {
                     placeholderImage.visibility = View.VISIBLE
                     placeholderMessage.visibility = View.VISIBLE
