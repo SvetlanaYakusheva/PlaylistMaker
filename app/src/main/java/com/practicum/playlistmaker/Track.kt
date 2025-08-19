@@ -14,5 +14,6 @@ data class Track(
     var collectionName: String?, //Название альбома
     val releaseDate: String?, // год релиза
     val primaryGenreName: String, // название жанра
-    val country: String // страна исполнителя
+    val country: String, // страна исполнителя
+    val previewUrl: String //30-секундный отрывок
 ) : Parcelable
