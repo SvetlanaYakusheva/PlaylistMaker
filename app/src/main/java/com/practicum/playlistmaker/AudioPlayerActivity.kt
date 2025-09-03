@@ -22,14 +22,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private var track: Track? = null
     private var mediaPlayer = MediaPlayer()
     private var timerSeconds = 0
-    companion object {
-        const val KEY_TRACK_TO_AUDIOPLAYER = "KEY_TRACK_TO_AUDIOPLAYER"
 
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-    }
     private var playerState = STATE_DEFAULT
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -124,7 +117,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         playerState = STATE_PLAYING
         play.setImageResource(R.drawable.pause_button_100)
 
-        handler.postDelayed(runnable, 1000)
+        handler.postDelayed(runnable, PLAYER_DELAY_MILLIS)
     }
 
     private fun pausePlayer() {
@@ -133,7 +126,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         play.setImageResource(R.drawable.play_button_100)
 
         handler.removeCallbacksAndMessages(null)
-        timerSeconds++ //при каждой паузе теряется примерно 1 секунда таймера
+        timerSeconds = mediaPlayer.currentPosition / 1000
         handler.post {
             timer.text = String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60)
         }
@@ -150,10 +143,17 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
     private val runnable = object : Runnable {
         override fun run() {
-            timerSeconds++
+            timerSeconds = mediaPlayer.currentPosition / 1000
             timer.text =  String.format("%d:%02d", timerSeconds / 60, timerSeconds % 60)
-            handler.postDelayed(this, 1000)
-
+            handler.postDelayed(this, PLAYER_DELAY_MILLIS)
         }
+    }
+    companion object {
+        const val KEY_TRACK_TO_AUDIOPLAYER = "KEY_TRACK_TO_AUDIOPLAYER"
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val PLAYER_DELAY_MILLIS = 300L
     }
 }
