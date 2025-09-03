@@ -1,6 +1,9 @@
 package com.practicum.playlistmaker
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -11,6 +14,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -37,10 +41,46 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderMessageDescription: TextView
     private lateinit var refreshButton: Button
+    private lateinit var progressBar: ProgressBar
+    private lateinit var recyclerView: RecyclerView
 
     private var responseCode: Int = 0
-    private var trackAdapter = TrackAdapter(this)
-        private var trackAdapterSearchHistory = TrackAdapter(this)
+    
+    private val trackClickListener = TrackAdapter.TrackClickListener {
+        // обработка нажатия на трек - добавление в историю поиска
+        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPrefs)
+        searchHistory.addTrackToSearchHistory(it)
+        // открытие экрана Аудиоплеера при нажатии на трек в списке
+        // с защитой от повторного нажатия в теч 1 сек
+        if (clickDebounce()) {
+            val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
+            audioPlayerIntent.putExtra(
+                AudioPlayerActivity.KEY_TRACK_TO_AUDIOPLAYER,
+                it
+            )
+            startActivity(audioPlayerIntent)
+        }
+    }
+    private var trackAdapter = TrackAdapter(trackClickListener)
+    private var trackAdapterSearchHistory  = TrackAdapter(trackClickListener)
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { search() }
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private var isClickAllowed = true
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +100,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessage = findViewById(R.id.error_message)
         placeholderMessageDescription = findViewById(R.id.error_message_description)
         refreshButton = findViewById(R.id.refresh_button)
+        progressBar = findViewById(R.id.progressBar)
 
         refreshButton.setOnClickListener{
             search()
@@ -104,7 +145,9 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                      searchHistoryLayout.visibility = View.GONE
                 }
-
+                if (inputEditText.hasFocus() && s?.isEmpty() == false) {
+                    searchDebounce()
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -119,7 +162,7 @@ class SearchActivity : AppCompatActivity() {
             trackAdapterSearchHistory.notifyDataSetChanged()
         }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler)
+        recyclerView = findViewById(R.id.recycler)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         trackAdapter.trackList = trackList
@@ -136,6 +179,12 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //очищаем очередь при закрытии экрана
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -184,6 +233,9 @@ class SearchActivity : AppCompatActivity() {
         private const val EDITTEXT_VALUE_DEF = ""
         private const val TRACKLIST_TO_JSON = "TRACKLIST_TO_JSON"
         private const val RESPONSE_CODE = "RESPONSE_CODE"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -195,17 +247,28 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search() {
+        // Меняем видимость элементов перед выполнением запроса
+        placeholderImage.visibility = View.GONE
+        placeholderMessage.visibility = View.GONE
+        placeholderMessageDescription.visibility = View.GONE
+        refreshButton.visibility = View.GONE
+        recyclerView.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
+
         iTunesService.search(inputEditText.text.toString())
             .enqueue(object : Callback<TrackListResponse> {
                 override fun onResponse(
                     call: Call<TrackListResponse>,
                     response: Response<TrackListResponse>
                 ) {
+                    progressBar.visibility = View.GONE // Прячем ProgressBar после успешного выполнения запроса
+                    recyclerView.visibility = View.VISIBLE
                     responseCode = response.code()
                     processResponseCode(responseCode, response.body()?.results)
                 }
 
                 override fun onFailure(call: Call<TrackListResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE // Прячем ProgressBar после выполнения запроса с ошибкой
                     responseCode = 500
                     processResponseCode(responseCode,null)
                 }
@@ -226,9 +289,7 @@ class SearchActivity : AppCompatActivity() {
                     placeholderImage.visibility = View.VISIBLE
                     placeholderMessage.visibility = View.VISIBLE
                     placeholderMessage.text = getString(R.string.nothing_found)
-                    placeholderImage.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_error_nothing_found_120, null)
-                    )
+                    placeholderImage.setImageResource(R.drawable.ic_error_nothing_found_120)
                 }
                 trackAdapter.notifyDataSetChanged()
                 placeholderMessageDescription.visibility = View.GONE
@@ -239,10 +300,7 @@ class SearchActivity : AppCompatActivity() {
                     placeholderMessage.visibility = View.VISIBLE
                     placeholderMessageDescription.visibility = View.VISIBLE
                     refreshButton.visibility = View.VISIBLE
-
-                    placeholderImage.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_network_error_120, null)
-                    )
+                    placeholderImage.setImageResource(R.drawable.ic_network_error_120)
                     placeholderMessage.text = getString(R.string.something_went_wrong)
                     placeholderMessageDescription.text =
                         getString(R.string.something_went_wrong_description)
