@@ -181,6 +181,12 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        //очищаем очередь при закрытии экрана
+        handler.removeCallbacksAndMessages(null)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         //сохраняем введенное значение в EditText  при пересоздании экрана
