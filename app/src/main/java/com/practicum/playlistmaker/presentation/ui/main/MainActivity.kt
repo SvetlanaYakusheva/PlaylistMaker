@@ -1,10 +1,13 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.main
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.presentation.ui.library.LibraryActivity
+import com.practicum.playlistmaker.presentation.ui.search.SearchActivity
+import com.practicum.playlistmaker.presentation.ui.settings.SettingsActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val buttonLibrary = findViewById<Button>(R.id.library_button)
         buttonLibrary.setOnClickListener {
-            val libraryIntent = Intent(this,LibraryActivity::class.java)
+            val libraryIntent = Intent(this, LibraryActivity::class.java)
             startActivity(libraryIntent)
         }
 

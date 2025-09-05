@@ -1,26 +1,31 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation
 
 import android.app.Application
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.domain.api.NightModeSettingsInteractor
 
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
 const val NIGHTMODE_KEY = "key_for_night_mode"
 class App : Application() {
     var darkTheme = false
+    lateinit var nightModeSettingsInteractorImpl: NightModeSettingsInteractor
     override fun onCreate() {
         super.onCreate()
-        val sharedPreferences = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
 
-        darkTheme =
-            sharedPreferences.getBoolean(NIGHTMODE_KEY, checkIfDarkThemeEnabledOnDevice())
+        // инициализация для последующего обращения к SharedPrefs
+        Creator.initApplication(this)
+        nightModeSettingsInteractorImpl = Creator.provideNightModeSettingsInteractor()
+
+
+
         //проверяем, есть ли в sharedPrefs ключ с темой, если нет - устанавливаем вслед за системой
-        if (!checkIfDarkThemeIsSetInSharedPrefs(sharedPreferences)) {
+        if (!nightModeSettingsInteractorImpl.checkIfDarkThemeIsSetInSharedPrefs()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         //если ключ есть, то устанавливаем нужную тему
         } else {
-            switchTheme(darkTheme)
+            switchTheme(nightModeSettingsInteractorImpl.getNightMode(checkIfDarkThemeEnabledOnDevice()))
         }
     }
     fun switchTheme(darkThemeEnabled: Boolean) {
@@ -39,15 +44,11 @@ class App : Application() {
     // от темы устройства (кроме положения переключателя)
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val sharedPreferences = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        if (!checkIfDarkThemeIsSetInSharedPrefs(sharedPreferences)) {
+        if (!nightModeSettingsInteractorImpl.checkIfDarkThemeIsSetInSharedPrefs()) {
             darkTheme = checkIfDarkThemeEnabledOnDevice()
         }
     }
-    //проверка, есть ли в sharedPrefs ключ для темной темы
-    private fun checkIfDarkThemeIsSetInSharedPrefs(sharedPreferences: SharedPreferences): Boolean {
-        return sharedPreferences.contains(NIGHTMODE_KEY)
-    }
+
     //проверка темы устройства
     private fun checkIfDarkThemeEnabledOnDevice(): Boolean {
         return when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {

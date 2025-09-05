@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.search
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,22 +20,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.domain.api.TrackListInteractor
+import com.practicum.playlistmaker.domain.models.Resource
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.ui.audioplayer.AudioPlayerActivity
+
 
 class SearchActivity : AppCompatActivity() {
     private var editTextValue: String = ""
     private var trackList: MutableList<Track> = mutableListOf()
-    private val iTunesBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private var searchHistoryTrackList: MutableList<Track> = mutableListOf()
 
-    private val iTunesService = retrofit.create(ITunesApi::class.java)
+    private val trackListInteractorImpl = Creator.provideTrackListInteractor()
+    private val searchHistoryInteractorImpl = Creator.provideSearchHistoryInteractor()
+
     private lateinit var inputEditText: EditText
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderMessage: TextView
@@ -44,13 +45,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
-    private var responseCode: Int = 0
     
     private val trackClickListener = TrackAdapter.TrackClickListener {
         // обработка нажатия на трек - добавление в историю поиска
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
-        val searchHistory = SearchHistory(sharedPrefs)
-        searchHistory.addTrackToSearchHistory(it)
+        searchHistoryInteractorImpl.addTrackToSearchHistory(it)
+
         // открытие экрана Аудиоплеера при нажатии на трек в списке
         // с защитой от повторного нажатия в теч 1 сек
         if (clickDebounce()) {
@@ -65,8 +64,11 @@ class SearchActivity : AppCompatActivity() {
     private var trackAdapter = TrackAdapter(trackClickListener)
     private var trackAdapterSearchHistory  = TrackAdapter(trackClickListener)
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { search() }
+    val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable {
+        search()
+    }
+
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
@@ -85,8 +87,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
-         val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
 
         val buttonBackToMainActivity = findViewById<ImageButton>(R.id.back_button_SearchActivity)
         buttonBackToMainActivity.setOnClickListener {
@@ -116,32 +116,38 @@ class SearchActivity : AppCompatActivity() {
         }
 
         //блок с историей поиска
-        val searchHistory = SearchHistory(sharedPrefs)
         val searchHistoryLayout = findViewById<ViewGroup>(R.id.search_history_layout)
         val clearHistoryButton = findViewById<Button>(R.id.button_clear_search_history)
         clearHistoryButton.setOnClickListener {
-            searchHistory.clearHistory()
-            trackAdapterSearchHistory.notifyDataSetChanged()
-            searchHistoryLayout.visibility = View.GONE
+            searchHistoryInteractorImpl.clearHistory(
+                consumer =  object : SearchHistoryInteractor.ClearHistoryConsumer {
+
+                    override fun consume(unit: Unit) {
+                        searchHistoryTrackList.clear()
+                        trackAdapterSearchHistory.notifyDataSetChanged()
+                        searchHistoryLayout.visibility = View.GONE
+                    }
+                }
+            )
         }
+
         val recyclerViewSearchHistory = findViewById<RecyclerView>(R.id.searchHistoryRecycler)
         recyclerViewSearchHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-        trackAdapterSearchHistory.trackList = searchHistory.trackList
+        trackAdapterSearchHistory.trackList = searchHistoryTrackList
+        getSearchHistory()
         recyclerViewSearchHistory.adapter = trackAdapterSearchHistory
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // empty
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
                 editTextValue = s.toString()
-                 if (inputEditText.hasFocus() && s?.isEmpty() == true  && searchHistory.trackList.isNotEmpty()) {
+                 if (inputEditText.hasFocus() && s?.isEmpty() == true  && searchHistoryTrackList.isNotEmpty()) {
+                     clearState()
+                     getSearchHistory()
                      searchHistoryLayout.visibility = View.VISIBLE
-                     searchHistory.getSearchHistory()
-                     trackAdapterSearchHistory.notifyDataSetChanged()
                 } else {
                      searchHistoryLayout.visibility = View.GONE
                 }
@@ -149,7 +155,6 @@ class SearchActivity : AppCompatActivity() {
                     searchDebounce()
                 }
             }
-
             override fun afterTextChanged(s: Editable?) {
                editTextValue = s.toString()
             }
@@ -157,9 +162,8 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            searchHistoryLayout.visibility = if (hasFocus && inputEditText.text.isEmpty() && searchHistory.trackList.isNotEmpty()) View.VISIBLE else View.GONE
-            searchHistory.getSearchHistory()
-            trackAdapterSearchHistory.notifyDataSetChanged()
+            searchHistoryLayout.visibility = if (hasFocus && inputEditText.text.isEmpty() && searchHistoryTrackList.isNotEmpty()) View.VISIBLE else View.GONE
+            getSearchHistory()
         }
 
         recyclerView = findViewById(R.id.recycler)
@@ -168,6 +172,7 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter.trackList = trackList
         recyclerView.adapter = trackAdapter
 
+        //слушатель нажатия Enter на вирт клавиатуре
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (editTextValue.isNotEmpty()) {
@@ -201,7 +206,6 @@ class SearchActivity : AppCompatActivity() {
 
         //сохраняем код ответа на запрос
         outState.putInt(RESPONSE_CODE, responseCode)
-
          */
     }
 
@@ -222,20 +226,7 @@ class SearchActivity : AppCompatActivity() {
         if (trackList.isEmpty() and editTextValue.isNotEmpty()) {
             processResponseCode(responseCode, trackList)
         }
-
          */
-
-
-    }
-
-    companion object {
-        private const val EDITTEXT_VALUE = "EDITTEXT_VALUE"
-        private const val EDITTEXT_VALUE_DEF = ""
-        private const val TRACKLIST_TO_JSON = "TRACKLIST_TO_JSON"
-        private const val RESPONSE_CODE = "RESPONSE_CODE"
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -246,75 +237,82 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun search() {
-        // Меняем видимость элементов перед выполнением запроса
-        placeholderImage.visibility = View.GONE
-        placeholderMessage.visibility = View.GONE
-        placeholderMessageDescription.visibility = View.GONE
-        refreshButton.visibility = View.GONE
-        recyclerView.visibility = View.GONE
-        progressBar.visibility = View.VISIBLE
-
-        iTunesService.search(inputEditText.text.toString())
-            .enqueue(object : Callback<TrackListResponse> {
-                override fun onResponse(
-                    call: Call<TrackListResponse>,
-                    response: Response<TrackListResponse>
-                ) {
-                    progressBar.visibility = View.GONE // Прячем ProgressBar после успешного выполнения запроса
-                    recyclerView.visibility = View.VISIBLE
-                    responseCode = response.code()
-                    processResponseCode(responseCode, response.body()?.results)
+    private fun getSearchHistory() {
+        searchHistoryInteractorImpl.getSearchHistory(
+            consumer = object : SearchHistoryInteractor.SearchHistoryConsumer {
+                override fun consume(foundSearchHistoryTracks: List<Track>) {
+                    searchHistoryTrackList.clear()
+                    searchHistoryTrackList.addAll(foundSearchHistoryTracks)
+                    trackAdapterSearchHistory.notifyDataSetChanged()
                 }
-
-                override fun onFailure(call: Call<TrackListResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE // Прячем ProgressBar после выполнения запроса с ошибкой
-                    responseCode = 500
-                    processResponseCode(responseCode,null)
-                }
-
-            })
+            }
+        )
     }
 
-    private fun processResponseCode(responseCode: Int, responseList: MutableList<Track>?) {
-        when (responseCode) {
-            200 -> {
-                trackList.clear()
-                if (responseList?.isNotEmpty() == true) {
-                    trackList.addAll(responseList)
-                    placeholderImage.visibility = View.GONE
-                    placeholderMessage.visibility = View.GONE
-
-                } else {
-                    placeholderImage.visibility = View.VISIBLE
-                    placeholderMessage.visibility = View.VISIBLE
-                    placeholderMessage.text = getString(R.string.nothing_found)
-                    placeholderImage.setImageResource(R.drawable.ic_error_nothing_found_120)
-                }
-                trackAdapter.notifyDataSetChanged()
-                placeholderMessageDescription.visibility = View.GONE
-                refreshButton.visibility = View.GONE
-            }
-            else -> {
-                    placeholderImage.visibility = View.VISIBLE
-                    placeholderMessage.visibility = View.VISIBLE
-                    placeholderMessageDescription.visibility = View.VISIBLE
-                    refreshButton.visibility = View.VISIBLE
-                    placeholderImage.setImageResource(R.drawable.ic_network_error_120)
-                    placeholderMessage.text = getString(R.string.something_went_wrong)
-                    placeholderMessageDescription.text =
-                        getString(R.string.something_went_wrong_description)
-            }
+    private fun search(){
+        if (inputEditText.text.toString().isEmpty())  {
+            recyclerView.visibility = View.GONE
+            return
         }
+
+        // Меняем видимость элементов перед выполнением запроса
+        clearState()
+
+        progressBar.visibility = View.VISIBLE
+
+        trackListInteractorImpl.search(
+            expression = inputEditText.text.toString(),
+            consumer = object : TrackListInteractor.TrackListConsumer {
+                override fun consume(foundTracks: Resource<List<Track>>) {
+                    handler.post {
+                        progressBar.visibility = View.GONE
+                        if (foundTracks is Resource.Error) {
+                            placeholderImage.visibility = View.VISIBLE
+                            placeholderMessage.visibility = View.VISIBLE
+                            placeholderMessageDescription.visibility = View.VISIBLE
+                            refreshButton.visibility = View.VISIBLE
+                            placeholderImage.setImageResource(R.drawable.ic_network_error_120)
+                            placeholderMessage.text = getString(R.string.something_went_wrong)
+                            placeholderMessageDescription.text =
+                                getString(R.string.something_went_wrong_description)
+                        } else if (foundTracks is Resource.Success) {
+                            if (foundTracks.data.isEmpty()) {
+                                placeholderImage.visibility = View.VISIBLE
+                                placeholderMessage.visibility = View.VISIBLE
+                                placeholderMessage.text = getString(R.string.nothing_found)
+                                placeholderImage.setImageResource(R.drawable.ic_error_nothing_found_120)
+                            } else {
+                                trackList.addAll(foundTracks.data)
+                                trackAdapter.notifyDataSetChanged()
+                                placeholderImage.visibility = View.GONE
+                                placeholderMessage.visibility = View.GONE
+                                recyclerView.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                }
+            }
+        )
     }
 
     private fun clearState(){
         trackList.clear()
         trackAdapter.notifyDataSetChanged()
+        recyclerView.visibility = View.GONE
         placeholderImage.visibility = View.GONE
         placeholderMessage.visibility = View.GONE
         placeholderMessageDescription.visibility = View.GONE
         refreshButton.visibility = View.GONE
+    }
+
+    companion object {
+        private const val EDITTEXT_VALUE = "EDITTEXT_VALUE"
+        private const val EDITTEXT_VALUE_DEF = ""
+        private const val TRACKLIST_TO_JSON = "TRACKLIST_TO_JSON"
+        private const val RESPONSE_CODE = "RESPONSE_CODE"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+
     }
 }
 

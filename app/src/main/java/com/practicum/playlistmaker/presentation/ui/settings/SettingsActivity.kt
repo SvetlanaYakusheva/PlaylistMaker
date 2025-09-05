@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -7,27 +7,28 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.presentation.App
+import com.practicum.playlistmaker.R
 
 
 class SettingsActivity : AppCompatActivity() {
+    private val nightModeSettingsInteractorImpl = Creator.provideNightModeSettingsInteractor()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
         themeSwitcher.isChecked = (applicationContext as App).darkTheme
-        val sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             if (switcher.isPressed) {
                 (applicationContext as App).switchTheme(checked)
-                sharedPrefs.edit()
-                    .putBoolean(NIGHTMODE_KEY, checked)
-                    .apply()
+                nightModeSettingsInteractorImpl.saveNightMode(checked)
             } else {
                 themeSwitcher.isChecked = (applicationContext as App).darkTheme
             }
         }
-
 
         val buttonBackToMainActivity = findViewById<ImageButton>(R.id.back_button_SettingsActivity)
         buttonBackToMainActivity.setOnClickListener {
