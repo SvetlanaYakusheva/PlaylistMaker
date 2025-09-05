@@ -19,6 +19,7 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
         sharedPreferences.edit()
             .remove(KEY_SEARCH_HISTORY_TRACKLIST)
             .apply()
+
         trackList.clear()
     }
 
