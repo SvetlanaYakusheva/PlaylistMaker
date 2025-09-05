@@ -3,7 +3,6 @@ package com.practicum.playlistmaker.data
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.practicum.playlistmaker.data.dto.TrackDto
-import com.practicum.playlistmaker.data.dto.TrackListResponse
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.models.Track
 
