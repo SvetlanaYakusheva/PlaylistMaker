@@ -11,9 +11,6 @@ class SearchHistoryInteractorImpl (private val repository: SearchHistoryReposito
        consumer.consume(repository.getSearchHistory())
     }
 
-//    override fun clearHistory(consumer: SearchHistoryInteractor.ClearHistoryConsumer) {
-//       consumer.consume(repository.clearHistory())
-//    }
     override fun clearHistory() {
        repository.clearHistory()
     }

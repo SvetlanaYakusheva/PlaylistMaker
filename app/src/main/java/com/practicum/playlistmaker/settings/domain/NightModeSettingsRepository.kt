@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.settings.domain
 
-
 interface NightModeSettingsRepository {
     fun saveNightMode(nightMode: Boolean)
     fun getNightMode(defValue:Boolean): Boolean

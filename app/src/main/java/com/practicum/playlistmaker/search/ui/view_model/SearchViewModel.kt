@@ -15,7 +15,7 @@ import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TrackListInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.search.ui.activity.SearchState
+import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.Resource
 
@@ -33,20 +33,14 @@ class SearchViewModel (context: Context): ViewModel() {
         }
     }
 
-    //private val moviesInteractor = Creator.provideMoviesInteractor(context)
-
     private val trackListInteractorImpl = Creator.provideTrackListInteractor()
     private val searchHistoryInteractorImpl = Creator.provideSearchHistoryInteractor()
 
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
 
-
-
     private var latestSearchText: String? = null
-
     private val handler = Handler(Looper.getMainLooper())
-
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
@@ -86,7 +80,6 @@ class SearchViewModel (context: Context): ViewModel() {
     }
 
     fun getClearActivity() {
-        //handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
         renderState(
             SearchState.ClearActivity
         )
@@ -106,23 +99,13 @@ class SearchViewModel (context: Context): ViewModel() {
                 override fun consume(foundTracks: Resource<List<Track>>) {
                     handler.post {
                         if (foundTracks is Resource.Error) {
-                            renderState(
-                                SearchState.Error
-                                    //(errorMessage = context.getString(R.string.something_went_wrong),)
-
-                            )
+                            renderState(SearchState.Error)
                         } else if (foundTracks is Resource.Success) {
                             if (foundTracks.data.isEmpty()) {
-                                renderState(
-                                    SearchState.Empty
-                                        //(message = context.getString(R.string.nothing_found),)
-
-                                )
+                                renderState(SearchState.Empty)
                             } else {
                                 renderState(
-                                    SearchState.Content(
-                                        foundTracks = foundTracks.data,
-                                    )
+                                    SearchState.Content(foundTracks = foundTracks.data)
                                 )
                             }
                         }

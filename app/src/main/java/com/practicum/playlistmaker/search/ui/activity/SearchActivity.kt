@@ -17,6 +17,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
+import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 
 

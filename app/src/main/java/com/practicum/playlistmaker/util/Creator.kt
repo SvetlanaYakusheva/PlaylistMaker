@@ -17,9 +17,12 @@ import com.practicum.playlistmaker.settings.domain.impl.NightModeSettingsInterac
 import com.practicum.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
 import com.practicum.playlistmaker.search.domain.impl.TrackListInteractorImpl
 import com.practicum.playlistmaker.PLAYLIST_MAKER_PREFERENCES
+import com.practicum.playlistmaker.sharing.data.impl.ExternalNavigator
+import com.practicum.playlistmaker.sharing.domain.SharingInteractor
+import com.practicum.playlistmaker.sharing.domain.impl.SharingInteractorImpl
 
 object Creator {
-    private lateinit var application: Application
+     private lateinit var application: Application
 
     fun initApplication (application: Application) {
         Creator.application = application
@@ -43,11 +46,22 @@ object Creator {
         return SearchHistoryInteractorImpl(getSearchHistoryRepository())
     }
 
-    private fun getNightModeSettingsRepository() : NightModeSettingsRepository {
+    private fun getNightModeSettingsRepository(): NightModeSettingsRepository {
         return NightModeSettingsRepositoryImpl(provideSharedPreferences())
     }
-    fun provideNightModeSettingsInteractor() : NightModeSettingsInteractor {
+
+    fun provideNightModeSettingsInteractor(): NightModeSettingsInteractor {
         return NightModeSettingsInteractorImpl(getNightModeSettingsRepository())
     }
 
+    private fun provideExternalNavigator(): ExternalNavigator {
+        return ExternalNavigator()
+    }
+    fun provideSharingInteractor() : SharingInteractor {
+        return SharingInteractorImpl(provideExternalNavigator())
+    }
+
+    fun provideApplication() : Application {
+        return  application
+    }
 }
