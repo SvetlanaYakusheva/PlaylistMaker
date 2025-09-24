@@ -18,5 +18,9 @@ class NightModeSettingsInteractorImpl (private val repository: NightModeSettings
         return repository.checkIfDarkThemeIsSetInSharedPrefs()
     }
 
+    override fun getThemeState(defValue: Boolean): Boolean {
+        return repository.getThemeState(defValue)
+    }
+
 
 }

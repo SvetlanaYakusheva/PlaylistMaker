@@ -29,7 +29,7 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
         trackList.remove(track)
         trackList.add(0,track)
         if (trackList.size > SEARCH_HISTORY_SIZE) {
-            trackList.removeAt(10)
+            trackList.removeAt(trackList.lastIndex)
         }
         writeToSharedPreferences()
     }
@@ -76,5 +76,6 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
     companion object {
         const val KEY_SEARCH_HISTORY_TRACKLIST = "KEY_SEARCH_HISTORY_TRACKLIST"
         private const val SEARCH_HISTORY_SIZE = 10
+
     }
 }

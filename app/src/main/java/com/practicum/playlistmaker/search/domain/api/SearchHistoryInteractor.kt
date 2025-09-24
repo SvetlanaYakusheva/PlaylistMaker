@@ -8,7 +8,7 @@ interface SearchHistoryInteractor {
     fun clearHistory()
     fun addTrackToSearchHistory(track: Track)
 
-    interface SearchHistoryConsumer {
+    fun interface SearchHistoryConsumer {
         fun consume(foundSearchHistoryTracks: List<Track>)
     }
 

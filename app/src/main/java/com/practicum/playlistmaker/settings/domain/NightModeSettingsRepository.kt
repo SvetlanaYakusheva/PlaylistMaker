@@ -6,4 +6,6 @@ interface NightModeSettingsRepository {
 
     //проверка, есть ли в sharedPrefs ключ для темной темы
     fun checkIfDarkThemeIsSetInSharedPrefs(): Boolean
+
+    fun getThemeState(defValue:Boolean): Boolean
 }

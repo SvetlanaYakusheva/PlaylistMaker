@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.sharing.SingleEventLiveData
 import com.practicum.playlistmaker.util.Creator
 
 
@@ -19,50 +18,33 @@ class SettingsViewModel(
 ) : ViewModel() {
     private val settingsInteractorImpl = Creator.provideNightModeSettingsInteractor()
     private val sharingInteractorImpl = Creator.provideSharingInteractor()
+    private val stateLiveData = MutableLiveData<Boolean>()
 
-
-    private var darkTheme = (context.applicationContext as App).darkTheme
-    private val stateLiveData = MutableLiveData(darkTheme)
+    init {
+        loadData()
+    }
 
     fun observeState(): LiveData<Boolean> = stateLiveData
 
-    fun changeNightMode(switcherChecked: Boolean) {
-        darkTheme = switcherChecked
-        stateLiveData.postValue(darkTheme)
-        settingsInteractorImpl.saveNightMode(darkTheme)
+    fun changeNightMode(switcherChecked: Boolean, switcherPressed: Boolean) {
+        if (switcherPressed) {
+            stateLiveData.postValue(switcherChecked)
+            settingsInteractorImpl.saveNightMode(switcherChecked)
+        } else {
+            stateLiveData.postValue(settingsInteractorImpl.getThemeState(true))
+        }
 
     }
-
-    fun getNightModeFromApp() {
+    private fun loadData() {
+        stateLiveData.value = settingsInteractorImpl.getThemeState(false)
     }
 
-    private val onSharingClickEvent = SingleEventLiveData<Int>()
-    fun getSharingClickEvent() : LiveData<Int> = onSharingClickEvent
-
-//    fun getSharingClick() {
-//        onSharingClickEvent.value =
-//    }
-//    val shareLinkClickEvent = SingleEventLiveData<String>()
-//    fun onShareLinkClickEvent(url: String) {
-//        shareLinkClickEvent.value = url
-//    }
     fun onShareLinkClickEvent() {
         sharingInteractorImpl.shareApp()
     }
-
- //   val writeToSupportEvent = SingleEventLiveData<EmailData>()
-//    fun onWriteToSupportClick(emaiLData: EmailData) {
-//        writeToSupportEvent.value = emaiLData
-//    }
     fun onWriteToSupportClick() {
         sharingInteractorImpl.openSupport()
     }
-
- //   val openUrlEvent = SingleEventLiveData<String>()
-
-//    fun onLinkClick(url: String) {
-//        openUrlEvent.value = url
-//    }
     fun onAgreementLinkClick() {
         sharingInteractorImpl.openTerms()
     }
@@ -75,4 +57,11 @@ class SettingsViewModel(
             }
         }
     }
+
+//    private val onSharingClickEvent = SingleEventLiveData<SharingState>()
+//    fun  getOnSharingClickEvent() : LiveData<SharingState> = onSharingClickEvent
+//
+//    fun showProductDetails(state: SharingState) {
+//        onSharingClickEvent.value = state
+//    }
 }
