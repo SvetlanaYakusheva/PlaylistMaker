@@ -6,32 +6,20 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel (private val url: String) : ViewModel() {
 
-    companion object {
-        const val STATE_DEFAULT = 0
-        const val STATE_PREPARED = 1
-        const val STATE_PLAYING = 2
-        const val STATE_PAUSED = 3
-        private const val PLAYER_DELAY_MILLIS = 300L
-
-        fun getFactory(trackUrl: String): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                PlayerViewModel(trackUrl)
-            }
-        }
-    }
 
     private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
     fun observePlayerState(): LiveData<Int> = playerStateLiveData
 
-    private val progressTimeLiveData = MutableLiveData("0:00")
+    private val progressTimeLiveData = MutableLiveData(
+                                SimpleDateFormat("m:ss",
+                                        Locale.getDefault()).format(0)
+    )
+
     fun observeProgressTime(): LiveData<String> = progressTimeLiveData
 
     private val mediaPlayer = MediaPlayer()
@@ -100,10 +88,19 @@ class PlayerViewModel (private val url: String) : ViewModel() {
 
     private fun resetTimer() {
         handler.removeCallbacks(timerRunnable)
-        progressTimeLiveData.postValue("0:00")
+        progressTimeLiveData.postValue(SimpleDateFormat("m:ss",
+            Locale.getDefault()).format(0))
     }
 
     fun onPause() {
         pausePlayer()
+    }
+
+    companion object {
+        const val STATE_DEFAULT = 0
+        const val STATE_PREPARED = 1
+        const val STATE_PLAYING = 2
+        const val STATE_PAUSED = 3
+        private const val PLAYER_DELAY_MILLIS = 300L
     }
 }

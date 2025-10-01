@@ -1,16 +1,14 @@
 package com.practicum.playlistmaker.settings.data.impl
 
+import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.settings.domain.NightModeSettingsRepository
 import com.practicum.playlistmaker.NIGHTMODE_KEY
-import com.practicum.playlistmaker.util.Creator
 
-class NightModeSettingsRepositoryImpl (private val sharedPreferences: SharedPreferences) :
+class NightModeSettingsRepositoryImpl (private val sharedPreferences: SharedPreferences, val app: Application) :
     NightModeSettingsRepository {
-
-        val app = Creator.provideApplication()
 
     override fun saveNightMode(nightMode: Boolean) {
         sharedPreferences.edit().putBoolean(NIGHTMODE_KEY, nightMode).apply()

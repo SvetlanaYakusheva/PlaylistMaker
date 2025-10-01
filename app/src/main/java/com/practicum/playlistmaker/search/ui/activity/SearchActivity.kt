@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
@@ -19,17 +18,21 @@ import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchActivity : AppCompatActivity() {
-    private var viewModel: SearchViewModel? = null
+
+    private val viewModel by viewModel<SearchViewModel>()
+
     private lateinit var binding: ActivitySearchBinding
     private val handler = Handler(Looper.getMainLooper())
     private var textWatcher: TextWatcher? = null
 
+
     private val trackClickListener = TrackAdapter.TrackClickListener {
         // обработка нажатия на трек - добавление в историю поиска
-        viewModel?.addTrackToSearchHistory(it)
+        viewModel.addTrackToSearchHistory(it)
         // открытие экрана Аудиоплеера при нажатии на трек в списке
         // с защитой от повторного нажатия в теч 1 сек
         if (clickDebounce()) {
@@ -60,10 +63,7 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this, SearchViewModel.getFactory())
-            .get(SearchViewModel::class.java)
-
-        viewModel?.observeState()?.observe(this) {
+        viewModel.observeState().observe(this) {
             render(it)
         }
 
@@ -72,7 +72,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.refreshButton.setOnClickListener{
-            viewModel?.searchDebounce(
+            viewModel.searchDebounce(
                 changedText = binding.inputEditText.text.toString()
             )
         }
@@ -83,12 +83,12 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0)
 
-            viewModel?.getClearActivity()
+            viewModel.getClearActivity()
         }
 
         //блок с историей поиска
         binding.buttonClearSearchHistory.setOnClickListener {
-            viewModel?.clearSearchHistory()
+            viewModel.clearSearchHistory()
         }
 
         binding.searchHistoryRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -101,12 +101,12 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.buttonClearSearchActivity.visibility = clearButtonVisibility(s)
                 if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isNotEmpty()) {
-                     viewModel?.getSearchHistory()
+                     viewModel.getSearchHistory()
                 } else if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isEmpty()) {
-                    viewModel?.getClearActivity()
+                    viewModel.getClearActivity()
                 }
                 if (binding.inputEditText.hasFocus() && s?.isEmpty()==false) {
-                    viewModel?.searchDebounce(
+                    viewModel.searchDebounce(
                         changedText = s.toString()
                     )
                 }
@@ -117,7 +117,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.inputEditText.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && binding.inputEditText.text.isEmpty()) {
-                viewModel?.getSearchHistory()
+                viewModel.getSearchHistory()
             }
         }
 
@@ -128,12 +128,12 @@ class SearchActivity : AppCompatActivity() {
         binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.inputEditText.text.isNotEmpty()) {
-                    viewModel?.searchDebounce(
+                    viewModel.searchDebounce(
                         changedText = binding.inputEditText.text.toString()
                     )
                 }
                 if (binding.inputEditText.text.isEmpty() and (trackAdapter.trackList.isNotEmpty() or binding.errorImage.isVisible)) {
-                    viewModel?.getClearActivity()
+                    viewModel.getClearActivity()
                 }
             }
             false
@@ -145,17 +145,6 @@ class SearchActivity : AppCompatActivity() {
         //очищаем очередь при закрытии экрана
         textWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
     }
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        //сохраняем введенное значение в EditText  при пересоздании экрана
-//        outState.putString(EDITTEXT_VALUE, editTextValue)
-//    }
-
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        editTextValue = savedInstanceState.getString(EDITTEXT_VALUE, EDITTEXT_VALUE_DEF)
-//    }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
@@ -265,8 +254,6 @@ class SearchActivity : AppCompatActivity() {
         if (trackList.isEmpty()) binding.searchHistoryLayout.visibility = View.GONE
     }
     companion object {
-        private const val EDITTEXT_VALUE = "EDITTEXT_VALUE"
-        private const val EDITTEXT_VALUE_DEF = ""
         private const val CLICK_DEBOUNCE_DELAY = 2000L
     }
 }

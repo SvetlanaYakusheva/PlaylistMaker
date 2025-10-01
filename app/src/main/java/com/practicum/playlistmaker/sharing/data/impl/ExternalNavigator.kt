@@ -1,13 +1,11 @@
 package com.practicum.playlistmaker.sharing.data.impl
 
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import com.practicum.playlistmaker.sharing.domain.model.EmailData
-import com.practicum.playlistmaker.util.Creator
 
-class ExternalNavigator() {
-
-    val app = Creator.provideApplication()
+class ExternalNavigator(val app: Application) {
 
     fun shareLink(url: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
@@ -21,7 +19,7 @@ class ExternalNavigator() {
         val supportIntent = Intent(Intent.ACTION_SENDTO)
 
         supportIntent.data = Uri.parse("mailto:")
-        supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email.emailReciever))
+        supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email.emailReceiver))
         supportIntent.putExtra(Intent.EXTRA_SUBJECT, email.subject)
         supportIntent.putExtra(Intent.EXTRA_TEXT, email.message)
         supportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

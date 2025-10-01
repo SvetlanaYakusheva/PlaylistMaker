@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ImageButton
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -16,12 +15,18 @@ import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.util.dpToPx
 import com.practicum.playlistmaker.util.getCoverArtwork
 import com.practicum.playlistmaker.util.getDateFormat
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class PlayerActivity : AppCompatActivity() {
 
     private var track: Track? = null
-    private lateinit var viewModel: PlayerViewModel
+    private var url = ""
+    private val viewModel: PlayerViewModel by viewModel {
+        parametersOf(url)
+    }
+
     private lateinit var binding: ActivityAudioplayerBinding
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -62,14 +67,10 @@ class PlayerActivity : AppCompatActivity() {
             finish()
         }
 
-        val url = track?.previewUrl ?: ""
-        // инициируем ViewModel и подписываемся на LiveData
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(url))
-            .get(PlayerViewModel::class.java)
+        url = track?.previewUrl ?: ""
 
         viewModel.observePlayerState().observe(this) {
             changeButtonImage(it == PlayerViewModel.STATE_PLAYING)
-
         }
 
         viewModel.observeProgressTime().observe(this) {

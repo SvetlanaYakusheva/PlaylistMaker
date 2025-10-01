@@ -6,7 +6,7 @@ import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
 
-class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferences) :
+class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferences, private val gson: Gson) :
     SearchHistoryRepository {
     private var trackList: MutableList<Track> = mutableListOf()
 
@@ -36,7 +36,7 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
 
     private fun readFromSharedPreferences() : List<Track> {
         val json = sharedPreferences.getString(KEY_SEARCH_HISTORY_TRACKLIST, null) ?: return emptyList()
-        return Gson().fromJson(json, Array<TrackDto>::class.java).map {
+        return gson.fromJson(json, Array<TrackDto>::class.java).map {
             Track(
                 it.trackId,
                 it.trackName, // Название композиции
@@ -68,7 +68,7 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
                 it.previewUrl
             )
         }
-        val json = Gson().toJson(list)
+        val json = gson.toJson(list)
         sharedPreferences.edit()
             .putString(KEY_SEARCH_HISTORY_TRACKLIST, json)
             .apply()
