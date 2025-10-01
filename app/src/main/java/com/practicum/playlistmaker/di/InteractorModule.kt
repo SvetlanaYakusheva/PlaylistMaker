@@ -14,6 +14,7 @@ val interactorModule = module {
 
     single<TrackListInteractor> {
         TrackListInteractorImpl(get())
+
     }
 
     single<SearchHistoryInteractor> {
