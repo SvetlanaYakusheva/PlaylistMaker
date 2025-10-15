@@ -1,40 +1,18 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TrackListInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.SearchState
-import com.practicum.playlistmaker.util.Creator
 import com.practicum.playlistmaker.util.Resource
 
-class SearchViewModel (context: Context): ViewModel() {
-
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                SearchViewModel(app)
-            }
-        }
-    }
-
-    private val trackListInteractorImpl = Creator.provideTrackListInteractor()
-    private val searchHistoryInteractorImpl = Creator.provideSearchHistoryInteractor()
+class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor, private val searchHistoryInteractorImpl: SearchHistoryInteractor): ViewModel() {
 
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
@@ -74,6 +52,7 @@ class SearchViewModel (context: Context): ViewModel() {
             }
         )
     }
+
     fun clearSearchHistory() {
         searchHistoryInteractorImpl.clearHistory()
         getClearActivity()
@@ -124,5 +103,10 @@ class SearchViewModel (context: Context): ViewModel() {
     override fun onCleared() {
         super.onCleared()
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    }
+
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private val SEARCH_REQUEST_TOKEN = Any()
     }
 }

@@ -4,7 +4,7 @@ import com.practicum.playlistmaker.search.domain.model.Track
 
 sealed interface SearchState {
 
-    object Loading : SearchState
+    data object Loading : SearchState
 
     data class Content(
         val foundTracks: List<Track>
@@ -14,18 +14,10 @@ sealed interface SearchState {
         val foundSearchHistoryTracks: List<Track>
     ) : SearchState
 
-//    data class Error(
-//        val errorMessage: String
-//    ) : SearchState
-//
-//    data class Empty(
-//        val message: String
-//    ) : SearchState
+    data object Error : SearchState
 
-    object Error : SearchState
+    data object Empty : SearchState
 
-    object Empty : SearchState
-
-    object ClearActivity : SearchState
+    data object ClearActivity : SearchState
 
 }

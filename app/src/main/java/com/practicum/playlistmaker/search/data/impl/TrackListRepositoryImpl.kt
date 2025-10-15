@@ -11,7 +11,7 @@ class TrackListRepositoryImpl (private val networkClient: NetworkClient) : Track
 
     override fun search(expression: String): Resource<List<Track>> {
         val response = networkClient.doRequest(TrackListRequest(expression))
-        //сюда приходит правильный ответ на запрос пока что - список треков по запросу
+
         if (response.resultCode == 200) {
             val list = (response as TrackListResponse).results.map {
                 Track(

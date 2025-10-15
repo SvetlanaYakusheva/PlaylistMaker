@@ -1,23 +1,15 @@
 package com.practicum.playlistmaker.settings.ui.view_model
 
-
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.util.Creator
-
+import com.practicum.playlistmaker.settings.domain.NightModeSettingsInteractor
+import com.practicum.playlistmaker.sharing.domain.SharingInteractor
 
 class SettingsViewModel(
-    context: Context
+    private val settingsInteractorImpl: NightModeSettingsInteractor,
+    private val sharingInteractorImpl: SharingInteractor
 ) : ViewModel() {
-    private val settingsInteractorImpl = Creator.provideNightModeSettingsInteractor()
-    private val sharingInteractorImpl = Creator.provideSharingInteractor()
     private val stateLiveData = MutableLiveData<Boolean>()
 
     init {
@@ -49,19 +41,4 @@ class SettingsViewModel(
         sharingInteractorImpl.openTerms()
     }
 
-    companion object {
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as App)
-                SettingsViewModel(app)
-            }
-        }
-    }
-
-//    private val onSharingClickEvent = SingleEventLiveData<SharingState>()
-//    fun  getOnSharingClickEvent() : LiveData<SharingState> = onSharingClickEvent
-//
-//    fun showProductDetails(state: SharingState) {
-//        onSharingClickEvent.value = state
-//    }
 }
