@@ -13,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 val dataModule = module {
 
     single<ITunesApi> {
-        val iTunesBaseUrl = "https://itunes.apple.com"
 
         Retrofit.Builder()
             .baseUrl(iTunesBaseUrl)
@@ -33,6 +32,7 @@ val dataModule = module {
       RetrofitNetworkClient(get())
     }
 
-
 }
+
+const val iTunesBaseUrl = "https://itunes.apple.com"
 
