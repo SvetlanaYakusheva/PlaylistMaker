@@ -128,4 +128,12 @@
         <item name="android:layout_marginTop">16dp</item>
     </style>
 
+    <style name="NoAllCapsTabLayout" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <!--<item name="android:textAllCaps">false</item>-->
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

@@ -1,10 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    tools:context=".library.ui.activity.LibraryActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".library.ui.LibraryActivity">
+    android:background="?attr/colorSecondary"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/back_button_library"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:padding="16dp"
+            android:contentDescription="@string/back_button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="?attr/colorOnSecondary"
+            android:backgroundTint="?attr/colorSecondary"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/media_library"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"
+            android:textSize="22sp"
+            android:textColor="?attr/colorOnSecondary"/>
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:backgroundTint="?attr/colorSecondary"
+        app:tabTextColor="?attr/colorOnSecondary"
+        app:tabMode="fixed"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorColor="?attr/colorOnSecondary"
+
+
+        app:tabIndicator="@drawable/tab_indicator_custom"
+        app:tabTextAppearance="@style/NoAllCapsTabLayout"
+    />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerLibrary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</LinearLayout>
