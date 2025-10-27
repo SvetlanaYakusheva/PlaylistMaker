@@ -1,47 +1,46 @@
 package com.practicum.playlistmaker.search.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.player.ui.activity.PlayerActivity
 import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private lateinit var binding: ActivitySearchBinding
     private val handler = Handler(Looper.getMainLooper())
     private var textWatcher: TextWatcher? = null
 
-
-    private val trackClickListener = TrackAdapter.TrackClickListener {
+    private val trackClickListener = TrackAdapter.TrackClickListener { track ->
         // обработка нажатия на трек - добавление в историю поиска
-        viewModel.addTrackToSearchHistory(it)
+        viewModel.addTrackToSearchHistory(track)
         // открытие экрана Аудиоплеера при нажатии на трек в списке
         // с защитой от повторного нажатия в теч 1 сек
         if (clickDebounce()) {
-            val audioPlayerIntent = Intent(this, PlayerActivity::class.java)
-            audioPlayerIntent.putExtra(
-                PlayerActivity.KEY_TRACK_TO_AUDIOPLAYER,
-                it
+            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
             )
-            startActivity(audioPlayerIntent)
         }
     }
 
@@ -58,17 +57,15 @@ class SearchActivity : AppCompatActivity() {
     private var trackAdapter = TrackAdapter(trackClickListener)
     private var trackAdapterSearchHistory  = TrackAdapter(trackClickListener)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        viewModel.observeState().observe(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
-        }
-
-        binding.backButtonSearchActivity.setOnClickListener {
-            finish()
         }
 
         binding.refreshButton.setOnClickListener{
@@ -80,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
         binding.buttonClearSearchActivity.setOnClickListener {
             binding.inputEditText.clearFocus()
             binding.inputEditText.setText("")
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.inputEditText.windowToken, 0)
 
             viewModel.getClearActivity()
@@ -91,7 +88,7 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearSearchHistory()
         }
 
-        binding.searchHistoryRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.searchHistoryRecycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.searchHistoryRecycler.adapter = trackAdapterSearchHistory
 
         textWatcher = object : TextWatcher {
@@ -101,7 +98,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.buttonClearSearchActivity.visibility = clearButtonVisibility(s)
                 if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isNotEmpty()) {
-                     viewModel.getSearchHistory()
+                    viewModel.getSearchHistory()
                 } else if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isEmpty()) {
                     viewModel.getClearActivity()
                 }
@@ -121,7 +118,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        binding.recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recycler.adapter = trackAdapter
 
         //слушатель нажатия Enter на вирт клавиатуре
@@ -131,19 +128,24 @@ class SearchActivity : AppCompatActivity() {
                     viewModel.searchDebounce(
                         changedText = binding.inputEditText.text.toString()
                     )
-                }
-                if (binding.inputEditText.text.isEmpty() and (trackAdapter.trackList.isNotEmpty() or binding.errorImage.isVisible)) {
-                    viewModel.getClearActivity()
+                } else {
+                    if (trackAdapterSearchHistory.trackList.isNotEmpty()) {
+                        viewModel.getSearchHistory()
+                    } else if ((trackAdapter.trackList.isNotEmpty() or binding.errorImage.isVisible)) {
+                        viewModel.getClearActivity()
+                    }
                 }
             }
             false
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         //очищаем очередь при закрытии экрана
         textWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
+        //обнуление привязки во избежание утечки
+        _binding = null
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -257,4 +259,3 @@ class SearchActivity : AppCompatActivity() {
         private const val CLICK_DEBOUNCE_DELAY = 2000L
     }
 }
-

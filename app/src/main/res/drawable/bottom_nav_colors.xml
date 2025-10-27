@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Цвет для выбранной иконки -->
+    <item android:color="@color/blue1" android:state_checked="true"/>
+    <!-- Цвет для невыбранной иконки -->
+    <item android:color="?attr/colorOnSecondary"/>
+</selector>

@@ -3,8 +3,7 @@
 
 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,15 +17,6 @@
             android:orientation="horizontal"
             android:paddingStart="5dp">
 
-            <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:backgroundTint="?attr/colorSecondary"
-                android:contentDescription="@string/back_button"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_back"
-                android:id="@+id/back_button_SettingsActivity"
-                app:tint="?attr/colorOnSecondary"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,20 +29,6 @@
                 android:fontFamily="@font/ys_display_medium"
                 android:textFontWeight="500"/>
         </LinearLayout>
-
-        <!--<FrameLayout
-            style="@style/FrameLayoutSettingsActivityStyle">
-            <TextView
-                style="@style/TextViewSettingsActivityStyle"
-                android:text="@string/dark_theme"/>
-            <androidx.appcompat.widget.SwitchCompat
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:switchMinWidth="32dp"
-                app:showText="false"
-                style="@style/SwitchStyle"/>
-
-        </FrameLayout> -->
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/themeSwitcher"
