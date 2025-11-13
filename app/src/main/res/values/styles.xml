@@ -48,13 +48,10 @@
         <item name="android:layout_gravity">end</item>
         <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:scaleType">fitCenter</item>
-        <!--<item name="android:checked">false</item>-->
-        <!--<item name="android:state_checked">false</item>-->
     </style>
 
     <style name="SwitchStyle">
         <item name="android:layout_gravity">start</item>
-        <!--<item name="android:checked">false</item>-->
         <item name="thumbTint">@color/white</item>
         <item name="trackTint">@color/grey_light</item>
         <item name="android:layout_width">match_parent</item>

@@ -8,18 +8,22 @@ import androidx.fragment.app.Fragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 
 class PlaylistsFragment : Fragment() {
-
-    //private  var playlistsViewModel: PlaylistsViewModel by viewModel
-    private lateinit var binding: FragmentPlaylistsBinding
+    private var _binding: FragmentPlaylistsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        _binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        //обнуление привязки во избежание утечки
+        _binding = null
+    }
     companion object {
         fun newInstance() = PlaylistsFragment()
     }

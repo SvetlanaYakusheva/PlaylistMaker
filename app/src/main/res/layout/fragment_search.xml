@@ -5,7 +5,7 @@
     android:id="@+id/search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".search.ui.activity.SearchActivity">
+    tools:context=".search.ui.activity.SearchFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,33 +13,17 @@
         android:background="?attr/colorSecondary"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:text="@string/search"
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="22sp"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"/>
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="20dp"
-                android:backgroundTint="?attr/colorSecondary"
-                android:contentDescription="@string/back_button"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_arrow_back"
-                android:id="@+id/back_button_SearchActivity"
-                app:tint="?attr/colorOnSecondary"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:text="@string/search"
-                android:textColor="?attr/colorOnSecondary"
-                android:textSize="22sp"
-                android:fontFamily="@font/ys_display_medium"
-                android:textFontWeight="500"/>
-        </LinearLayout>
         
         <FrameLayout
             android:layout_width="match_parent"
