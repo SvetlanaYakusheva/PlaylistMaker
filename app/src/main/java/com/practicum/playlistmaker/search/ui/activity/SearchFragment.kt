@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.search.ui.activity
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -13,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
@@ -21,6 +20,7 @@ import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import com.practicum.playlistmaker.util.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -28,34 +28,12 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<SearchViewModel>()
-
-    private val handler = Handler(Looper.getMainLooper())
     private var textWatcher: TextWatcher? = null
 
-    private val trackClickListener = TrackAdapter.TrackClickListener { track ->
-        // обработка нажатия на трек - добавление в историю поиска
-        viewModel.addTrackToSearchHistory(track)
-        // открытие экрана Аудиоплеера при нажатии на трек в списке
-        // с защитой от повторного нажатия в теч 1 сек
-        if (clickDebounce()) {
-            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
-                PlayerFragment.createArgs(track)
-            )
-        }
-    }
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
 
-    private var isClickAllowed = true
-    private fun clickDebounce() : Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
-    private var trackAdapter = TrackAdapter(trackClickListener)
-    private var trackAdapterSearchHistory  = TrackAdapter(trackClickListener)
+    private var trackAdapter: TrackAdapter? = null
+    private var trackAdapterSearchHistory: TrackAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -64,6 +42,27 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        onTrackClickDebounce = debounce<Track>(CLICK_DEBOUNCE_DELAY,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { track ->
+            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(track)
+            )
+        }
+
+        trackAdapter = TrackAdapter { track ->
+            viewModel.addTrackToSearchHistory(track)
+
+            onTrackClickDebounce(track)
+        }
+        trackAdapterSearchHistory = TrackAdapter { track ->
+            viewModel.addTrackToSearchHistory(track)
+
+            onTrackClickDebounce(track)
+        }
+
         viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
@@ -97,10 +96,8 @@ class SearchFragment : Fragment() {
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.buttonClearSearchActivity.visibility = clearButtonVisibility(s)
-                if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isNotEmpty()) {
+                if (binding.inputEditText.hasFocus() && s?.isEmpty() == true ) {
                     viewModel.getSearchHistory()
-                } else if (binding.inputEditText.hasFocus() && s?.isEmpty() == true  && trackAdapterSearchHistory.trackList.isEmpty()) {
-                    viewModel.getClearActivity()
                 }
                 if (binding.inputEditText.hasFocus() && s?.isEmpty()==false) {
                     viewModel.searchDebounce(
@@ -129,9 +126,9 @@ class SearchFragment : Fragment() {
                         changedText = binding.inputEditText.text.toString()
                     )
                 } else {
-                    if (trackAdapterSearchHistory.trackList.isNotEmpty()) {
+                    if (trackAdapterSearchHistory!!.trackList.isNotEmpty()) {
                         viewModel.getSearchHistory()
-                    } else if ((trackAdapter.trackList.isNotEmpty() or binding.errorImage.isVisible)) {
+                    } else if ((trackAdapter!!.trackList.isNotEmpty() or binding.errorImage.isVisible)) {
                         viewModel.getClearActivity()
                     }
                 }
@@ -202,9 +199,9 @@ class SearchFragment : Fragment() {
             refreshButton.visibility = View.GONE
             searchHistoryLayout.visibility = View.GONE
         }
-        trackAdapter.trackList.clear()
-        trackAdapter.trackList.addAll(trackList)
-        trackAdapter.notifyDataSetChanged()
+        trackAdapter?.trackList?.clear()
+        trackAdapter?.trackList?.addAll(trackList)
+        trackAdapter?.notifyDataSetChanged()
     }
 
     private fun showError() {
@@ -249,9 +246,9 @@ class SearchFragment : Fragment() {
             refreshButton.visibility = View.GONE
             searchHistoryLayout.visibility = View.VISIBLE
         }
-        trackAdapterSearchHistory.trackList.clear()
-        trackAdapterSearchHistory.trackList.addAll(trackList)
-        trackAdapterSearchHistory.notifyDataSetChanged()
+        trackAdapterSearchHistory?.trackList?.clear()
+        trackAdapterSearchHistory?.trackList?.addAll(trackList)
+        trackAdapterSearchHistory?.notifyDataSetChanged()
 
         if (trackList.isEmpty()) binding.searchHistoryLayout.visibility = View.GONE
     }

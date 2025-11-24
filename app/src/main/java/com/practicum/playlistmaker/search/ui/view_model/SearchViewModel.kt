@@ -1,16 +1,17 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TrackListInteractor
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.search.ui.SearchState
-import com.practicum.playlistmaker.util.Resource
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor, private val searchHistoryInteractorImpl: SearchHistoryInteractor): ViewModel() {
 
@@ -18,41 +19,48 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
     fun observeState(): LiveData<SearchState> = stateLiveData
 
     private var latestSearchText: String? = null
-    private val handler = Handler(Looper.getMainLooper())
 
+    private var searchJob: Job? = null
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
             return
         }
 
         this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
-        val searchRunnable = Runnable { searchRequest(changedText) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(changedText)
+        }
 
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
     }
 
     fun getSearchHistory() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        searchJob?.cancel()
+        latestSearchText = "" //при вызове блока с историей обнуляем последний текстовый запрос,
+        // чтобы при новом поиске по тем же символам не попасть в первый if
+        //handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
         searchHistoryInteractorImpl.getSearchHistory(
             consumer = object : SearchHistoryInteractor.SearchHistoryConsumer {
                 override fun consume(foundSearchHistoryTracks: List<Track>) {
                     renderState(
-                        SearchState.ContentHistory(
-                            foundSearchHistoryTracks = foundSearchHistoryTracks,
-                        )
+                        if (foundSearchHistoryTracks.isNotEmpty()) {
+                            SearchState.ContentHistory(
+                                foundSearchHistoryTracks = foundSearchHistoryTracks,
+                            )
+                        } else {
+                            SearchState.ClearActivity
+                        }
                     )
                 }
             }
         )
     }
 
+    fun addTrackToSearchHistory(track: Track) {
+        searchHistoryInteractorImpl.addTrackToSearchHistory(track)
+    }
     fun clearSearchHistory() {
         searchHistoryInteractorImpl.clearHistory()
         getClearActivity()
@@ -62,11 +70,9 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
         renderState(
             SearchState.ClearActivity
         )
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        searchJob?.cancel()
     }
-    fun addTrackToSearchHistory(track: Track) {
-        searchHistoryInteractorImpl.addTrackToSearchHistory(track)
-    }
+
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
@@ -74,23 +80,13 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
                 SearchState.Loading
             )
 
-            trackListInteractorImpl.search(newSearchText, object : TrackListInteractor.TrackListConsumer {
-                override fun consume(foundTracks: Resource<List<Track>>) {
-                    handler.post {
-                        if (foundTracks is Resource.Error) {
-                            renderState(SearchState.Error)
-                        } else if (foundTracks is Resource.Success) {
-                            if (foundTracks.data.isEmpty()) {
-                                renderState(SearchState.Empty)
-                            } else {
-                                renderState(
-                                    SearchState.Content(foundTracks = foundTracks.data)
-                                )
-                            }
-                        }
+            viewModelScope.launch {
+                trackListInteractorImpl
+                    .search(newSearchText)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
                     }
-                }
-            })
+            }
         } else {
             getSearchHistory()
         }
@@ -100,13 +96,23 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
         stateLiveData.postValue(state)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    private fun processResult(foundTracks: List<Track>?, errorMessage: String?) {
+
+        if (foundTracks != null) {
+            if (foundTracks.isEmpty()) {
+                renderState(SearchState.Empty)
+            } else {
+                renderState(
+                    SearchState.Content(foundTracks = foundTracks)
+                )
+            }
+        } else {
+            renderState(SearchState.Error)
+        }
     }
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
+
     }
 }
