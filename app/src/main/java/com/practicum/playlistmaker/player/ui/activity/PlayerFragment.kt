@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.player.ui.PlayerState
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.util.dpToPx
@@ -79,12 +80,12 @@ class PlayerFragment : Fragment() {
         url = track?.previewUrl ?: ""
 
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
-            changeButtonImage(it == PlayerViewModel.STATE_PLAYING)
+            changeButtonImage(it is PlayerState.Playing)
+            binding.timer.text = it.progress
         }
 
-        viewModel.observeProgressTime().observe(viewLifecycleOwner) {
-            binding.timer.text = (it)
-        }
+
+
         binding.playButton.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
