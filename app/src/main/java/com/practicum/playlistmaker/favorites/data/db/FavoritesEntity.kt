@@ -1,10 +1,11 @@
-package com.practicum.playlistmaker.search.domain.model
+package com.practicum.playlistmaker.favorites.data.db
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Parcelize
-data class Track(
+@Entity(tableName = "favorites_table")
+data class FavoritesEntity (
+    @PrimaryKey
     val trackId: Int,
     val trackName: String, // Название композиции
     var artistName: String, // Имя исполнителя
@@ -15,5 +16,8 @@ data class Track(
     val primaryGenreName: String?, // название жанра
     val country: String, // страна исполнителя
     val previewUrl: String, //30-секундный отрывок
-    var isFavorite: Boolean = false
-) : Parcelable
+    val timeOfAddingToFavorites: String // //время добавления в Избранное для правильной сортировки от нового к старому
+)
+
+
+

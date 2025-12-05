@@ -25,9 +25,11 @@ import org.koin.core.parameter.parametersOf
 class PlayerFragment : Fragment() {
 
     private var url = ""
+    private var isFavorite = false
     private val viewModel: PlayerViewModel by viewModel {
-        parametersOf(url)
+        parametersOf(url, isFavorite)
     }
+
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
 
@@ -78,16 +80,28 @@ class PlayerFragment : Fragment() {
 
 
         url = track?.previewUrl ?: ""
+        isFavorite = track?.isFavorite ?: false
 
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
+
             changeButtonImage(it is PlayerState.Playing)
             binding.timer.text = it.progress
         }
 
-
+        viewModel.observeFavoriteState().observe(viewLifecycleOwner) {
+            if (track != null) {
+                changeFavoritesButtonImage(track.isFavorite == true)
+            }
+        }
 
         binding.playButton.setOnClickListener {
             viewModel.onPlayButtonClicked()
+        }
+
+        binding.addToFavoritesButton.setOnClickListener {
+            if (track != null) {
+                viewModel.onFavoriteButtonClicked(track)
+            }
         }
     }
 
@@ -96,6 +110,14 @@ class PlayerFragment : Fragment() {
             binding.playButton.setImageResource(R.drawable.pause_button_100)
         } else {
             binding.playButton.setImageResource(R.drawable.play_button_100)
+        }
+    }
+
+    private fun changeFavoritesButtonImage(isFavorite: Boolean) {
+        if (isFavorite) {
+            binding.addToFavoritesButton.setImageResource(R.drawable.added_to_favorites_51)
+        } else {
+            binding.addToFavoritesButton.setImageResource(R.drawable.add_to_favorites_51)
         }
     }
     override fun onPause() {

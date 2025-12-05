@@ -1,7 +1,9 @@
 package com.practicum.playlistmaker.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
+import com.practicum.playlistmaker.favorites.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.network.ITunesApi
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -32,6 +34,10 @@ val dataModule = module {
       RetrofitNetworkClient(get())
     }
 
+    single {
+        Room.databaseBuilder(androidContext(), FavoritesDatabase::class.java, "database.db")
+            .build()
+    }
 }
 
 const val iTunesBaseUrl = "https://itunes.apple.com"

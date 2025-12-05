@@ -10,6 +10,7 @@ interface SearchHistoryInteractor {
 
     fun interface SearchHistoryConsumer {
         fun consume(foundSearchHistoryTracks: List<Track>)
+
     }
 
 }

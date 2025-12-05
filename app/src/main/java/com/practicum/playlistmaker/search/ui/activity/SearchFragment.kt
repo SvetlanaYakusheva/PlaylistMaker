@@ -47,19 +47,16 @@ class SearchFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope,
             false
         ) { track ->
+            viewModel.addTrackToSearchHistory(track)
             findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
                 PlayerFragment.createArgs(track)
             )
         }
 
         trackAdapter = TrackAdapter { track ->
-            viewModel.addTrackToSearchHistory(track)
-
             onTrackClickDebounce(track)
         }
         trackAdapterSearchHistory = TrackAdapter { track ->
-            viewModel.addTrackToSearchHistory(track)
-
             onTrackClickDebounce(track)
         }
 
@@ -136,6 +133,7 @@ class SearchFragment : Fragment() {
             false
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
