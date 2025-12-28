@@ -2,18 +2,31 @@ package com.practicum.playlistmaker.search.data.impl
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.practicum.playlistmaker.favorites.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.runBlocking
 
-class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferences, private val gson: Gson) :
-    SearchHistoryRepository {
+class SearchHistoryRepositoryImpl (
+                                private val sharedPreferences: SharedPreferences,
+                                private val gson: Gson,
+                                private val favoritesDatabase: FavoritesDatabase
+                                ) : SearchHistoryRepository {
     private var trackList: MutableList<Track> = mutableListOf()
 
     override fun getSearchHistory(): MutableList<Track> {
         trackList.clear()
         trackList.addAll(readFromSharedPreferences())
-        return trackList
+
+        val favoritesIdsList = runBlocking {
+            favoritesDatabase.favoritesDao().getFavoritesIds()
+        }
+        for (track in trackList) {
+            track.isFavorite = track.trackId in favoritesIdsList
+        }
+        return (trackList)
+
     }
 
     override fun clearHistory() {
@@ -26,7 +39,15 @@ class SearchHistoryRepositoryImpl (private val sharedPreferences: SharedPreferen
     override fun addTrackToSearchHistory(track: Track) {
         trackList.clear()
         trackList.addAll(readFromSharedPreferences())
-        trackList.remove(track)
+
+        for (trackInTracklist in trackList) {
+            if (trackInTracklist.trackId == track.trackId) {
+                trackList.remove(trackInTracklist)
+                break
+
+            }
+        }
+
         trackList.add(0,track)
         if (trackList.size > SEARCH_HISTORY_SIZE) {
             trackList.removeAt(trackList.lastIndex)

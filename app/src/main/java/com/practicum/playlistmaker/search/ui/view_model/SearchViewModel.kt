@@ -13,7 +13,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor, private val searchHistoryInteractorImpl: SearchHistoryInteractor): ViewModel() {
+class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
+                       private val searchHistoryInteractorImpl: SearchHistoryInteractor
+): ViewModel() {
 
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeState(): LiveData<SearchState> = stateLiveData
@@ -75,21 +77,24 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
 
 
     private fun searchRequest(newSearchText: String) {
-        if (newSearchText.isNotEmpty()) {
-            renderState(
-                SearchState.Loading
-            )
+        viewModelScope.launch {
+            if (newSearchText.isNotEmpty()) {
+                renderState(
+                    SearchState.Loading
+                )
 
-            viewModelScope.launch {
+                //viewModelScope.launch {
                 trackListInteractorImpl
                     .search(newSearchText)
                     .collect { pair ->
                         processResult(pair.first, pair.second)
                     }
-            }
+            //}
         } else {
             getSearchHistory()
+
         }
+    }
     }
 
     private fun renderState(state: SearchState) {

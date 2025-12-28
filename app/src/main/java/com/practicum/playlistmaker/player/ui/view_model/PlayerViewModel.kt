@@ -5,18 +5,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.favorites.domain.FavoritesInteractor
 import com.practicum.playlistmaker.player.ui.PlayerState
+import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.util.getDateFormat
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PlayerViewModel (private val url: String) : ViewModel() {
+class PlayerViewModel (
+                        private val url: String,
+                        isFavorite: Boolean,
+                        private val favoritesInteractor: FavoritesInteractor
+) : ViewModel() {
 
     private var timerJob: Job? = null
 
     private val playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     fun observePlayerState(): LiveData<PlayerState> = playerState
+
+    private val favoriteState = MutableLiveData<Boolean>(isFavorite)
+    fun observeFavoriteState(): LiveData<Boolean> = favoriteState
 
     private val mediaPlayer = MediaPlayer()
 
@@ -44,9 +53,22 @@ class PlayerViewModel (private val url: String) : ViewModel() {
             else -> { }
         }
     }
+    fun onFavoriteButtonClicked(track: Track) {
+        viewModelScope.launch {
+            if (!track.isFavorite) {
+                favoritesInteractor.addFavorite(track)
+            } else {
+                favoritesInteractor.deleteFavorite(track)
+            }
+            favoriteState.postValue(!track.isFavorite)
+            track.isFavorite = !track.isFavorite
+
+        }
+    }
 
     private fun preparePlayer() {
         mediaPlayer.setDataSource(url)
+        println(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
 
@@ -77,6 +99,7 @@ class PlayerViewModel (private val url: String) : ViewModel() {
     }
 
     private fun startTimer() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                 delay(PLAYER_DELAY_MILLIS)

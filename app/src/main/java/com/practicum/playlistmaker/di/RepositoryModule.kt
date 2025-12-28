@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.favorites.data.TrackDbConvertor
+import com.practicum.playlistmaker.favorites.data.impl.FavoritesRepositoryImpl
+import com.practicum.playlistmaker.favorites.domain.FavoritesRepository
 import com.practicum.playlistmaker.search.data.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.impl.TrackListRepositoryImpl
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
@@ -11,12 +14,14 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
+    factory { TrackDbConvertor() }
+
     single<TrackListRepository> {
-        TrackListRepositoryImpl(get())
+        TrackListRepositoryImpl(get(), get())
     }
 
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get(), get())
+        SearchHistoryRepositoryImpl(get(), get(), get())
     }
 
     single<NightModeSettingsRepository> {
@@ -27,4 +32,7 @@ val repositoryModule = module {
         ExternalNavigator(get())
     }
 
+    single<FavoritesRepository> {
+        FavoritesRepositoryImpl(get(), get())
+    }
 }
