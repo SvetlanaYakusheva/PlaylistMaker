@@ -16,6 +16,7 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/white</item>
         <item name="colorTertiary">@color/white</item>
+        <item name="colorTertiaryFixed">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->

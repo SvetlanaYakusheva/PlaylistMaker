@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="8dp">
+
+    <ImageView
+        android:id="@+id/playlistCover"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+
+        android:contentDescription="@string/name_of_playlist"
+        android:scaleType="fitCenter"
+        android:layout_gravity="start"/>
+
+
+    <TextView
+        android:id="@+id/playlistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/playlistCover"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="2dp"
+        tools:text="@string/name_of_playlist"
+
+        android:textSize="12sp"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorSecondaryVariant"
+
+        android:ellipsize="end"
+        android:maxLines="1"/>
+
+
+    <TextView
+        android:id="@+id/playlistSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/playlistName"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/playlist_size"
+
+        android:textSize="12sp"
+        android:fontFamily="@font/ys_display_regular"
+        android:textFontWeight="400"
+        android:textColor="?attr/colorSecondaryVariant"
+
+        android:ellipsize="end"
+        android:maxLines="1"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
