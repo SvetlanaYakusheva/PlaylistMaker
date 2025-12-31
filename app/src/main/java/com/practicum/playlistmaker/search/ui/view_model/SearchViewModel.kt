@@ -42,7 +42,6 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
         searchJob?.cancel()
         latestSearchText = "" //при вызове блока с историей обнуляем последний текстовый запрос,
         // чтобы при новом поиске по тем же символам не попасть в первый if
-        //handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
         searchHistoryInteractorImpl.getSearchHistory(
             consumer = object : SearchHistoryInteractor.SearchHistoryConsumer {
                 override fun consume(foundSearchHistoryTracks: List<Track>) {
@@ -83,13 +82,13 @@ class SearchViewModel (private val trackListInteractorImpl: TrackListInteractor,
                     SearchState.Loading
                 )
 
-                //viewModelScope.launch {
+
                 trackListInteractorImpl
                     .search(newSearchText)
                     .collect { pair ->
                         processResult(pair.first, pair.second)
                     }
-            //}
+
         } else {
             getSearchHistory()
 

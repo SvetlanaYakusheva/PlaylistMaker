@@ -17,9 +17,6 @@ val viewModelModule = module {
         SearchViewModel(get(), get())
     }
 
-//    viewModel { (previewUrl: String, isFavorite:Boolean) ->
-//        PlayerViewModel(previewUrl, isFavorite, get(), get())
-//    }
     viewModel { (track: Track) ->
         PlayerViewModel(track, get(), get())
     }

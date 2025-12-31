@@ -23,6 +23,5 @@ interface FavoritesDao {
 
 
     @Query("SELECT trackId FROM favorites_table")
-    //suspend fun getFavoritesIds(): List<Int>
     fun getFavoritesIdsForSearch(): Flow<List<Int>>
 }

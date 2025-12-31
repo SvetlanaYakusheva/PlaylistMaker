@@ -17,11 +17,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel (
-//                        private val url: String,
-//                        isFavorite: Boolean,
-    private val track: Track,
-    private val favoritesInteractor: FavoritesInteractor,
-    private val playlistInteractor: PlaylistInteractor
+                        private val track: Track,
+                        private val favoritesInteractor: FavoritesInteractor,
+                        private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private var timerJob: Job? = null

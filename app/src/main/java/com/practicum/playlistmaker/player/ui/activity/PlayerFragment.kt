@@ -30,11 +30,6 @@ import org.koin.core.parameter.parametersOf
 
 class PlayerFragment : Fragment() {
 
-//    private var url = ""
-//    private var isFavorite = false
-//    private val viewModel: PlayerViewModel by viewModel {
-//        parametersOf(url, isFavorite)
-//    }
     var track: Track? = null
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(track)
@@ -42,7 +37,7 @@ class PlayerFragment : Fragment() {
 
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
-    var playlistAdapter: PlaylistBottomSheetAdapter? = null
+    private var playlistAdapter: PlaylistBottomSheetAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +56,7 @@ class PlayerFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        //val track = requireArguments().getParcelable(KEY_TRACK_TO_PLAYER, Track::class.java)
+
         track = requireArguments().getParcelable(KEY_TRACK_TO_PLAYER, Track::class.java)
 
         binding.trackName.text = track?.trackName
@@ -90,8 +85,6 @@ class PlayerFragment : Fragment() {
             .into(binding.trackCover)
 
 
-//        url = track?.previewUrl ?: ""
-//        isFavorite = track?.isFavorite ?: false
 
         viewModel.observePlayerState().observe(viewLifecycleOwner) {
             changeButtonImage(it is PlayerState.Playing)
@@ -215,7 +208,6 @@ class PlayerFragment : Fragment() {
         binding.apply {
 
             recyclerPlaylists.isVisible = true
-            //noPlaylistsFound.isVisible = false
 
 
         }
