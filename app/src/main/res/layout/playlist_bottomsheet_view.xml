@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="61dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingStart="13dp"
+    android:paddingEnd="13dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:id="@+id/playlistCover"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/album_cover"
+        android:scaleType="fitCenter"
+        android:layout_gravity="start"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+
+        android:layout_height="match_parent"
+        android:layout_marginStart="66dp"
+        android:orientation="vertical">
+        <TextView
+            tools:text="@string/name_of_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="19dp"
+            android:id="@+id/playlistName"
+            android:gravity="center_vertical"
+
+            android:textSize="16sp"
+            android:fontFamily="@font/ys_display_regular"
+            android:textFontWeight="400"
+            android:textColor="?attr/colorSecondaryVariant"
+
+            android:layout_marginTop="14dp"
+
+            android:ellipsize="end"
+            android:maxLines="1"/>
+
+
+        <TextView
+            android:id="@+id/playlistSize"
+            android:layout_width="wrap_content"
+            android:layout_height="13dp"
+            tools:text="@string/playlist_size"
+
+            android:textSize="11sp"
+            android:fontFamily="@font/ys_display_regular"
+            android:textFontWeight="400"
+            android:textColor="?attr/colorSecondaryVariant"
+
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            />
+
+
+
+
+
+    </LinearLayout>
+
+</FrameLayout>

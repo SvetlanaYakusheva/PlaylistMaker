@@ -43,5 +43,6 @@ class LibraryFragment : Fragment() {
         super.onDestroyView()
         //обнуление привязки во избежание утечки
         _binding = null
+        tabMediator.detach()
     }
 }

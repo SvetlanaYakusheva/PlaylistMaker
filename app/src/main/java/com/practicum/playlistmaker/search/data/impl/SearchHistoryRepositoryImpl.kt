@@ -2,7 +2,7 @@ package com.practicum.playlistmaker.search.data.impl
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.practicum.playlistmaker.favorites.data.db.FavoritesDatabase
+import com.practicum.playlistmaker.library.favorites.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.search.data.dto.TrackDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.model.Track
