@@ -33,5 +33,14 @@ class ExternalNavigator(val app: Application) {
         app.startActivity(intent)
     }
 
+    fun sharePlaylist(playlistToShare: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, playlistToShare)
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        app.startActivity(shareIntent)
+
+    }
+
 
 }

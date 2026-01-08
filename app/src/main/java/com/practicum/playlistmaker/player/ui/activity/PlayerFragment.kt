@@ -56,7 +56,6 @@ class PlayerFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-
         track = requireArguments().getParcelable(KEY_TRACK_TO_PLAYER, Track::class.java)
 
         binding.trackName.text = track?.trackName
@@ -97,7 +96,7 @@ class PlayerFragment : Fragment() {
 
         viewModel.observeFavoriteState().observe(viewLifecycleOwner) {
             if (track != null) {
-                //changeFavoritesButtonImage(track.isFavorite == true)
+
                 changeFavoritesButtonImage(track!!.isFavorite)
             }
         }
@@ -206,10 +205,7 @@ class PlayerFragment : Fragment() {
     }
     private fun showContent(playlists: List<Playlist>) {
         binding.apply {
-
             recyclerPlaylists.isVisible = true
-
-
         }
 
         playlistAdapter?.playlistList?.clear()
@@ -218,10 +214,7 @@ class PlayerFragment : Fragment() {
     }
     private fun showEmpty() {
         binding.apply {
-
             recyclerPlaylists.isVisible = false
-            //noPlaylistsFound.isVisible = true
-
         }
     }
     companion object {

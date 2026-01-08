@@ -21,8 +21,7 @@ class PlaylistBottomSheetViewHolder (itemView: View): RecyclerView.ViewHolder(it
     fun bind(model: Playlist) {
 
         playlistName.text = model.name
-        playlistSize.text = "${model.playlistSize} трек${determingEndOfWord(model.playlistSize)}"
-
+        playlistSize.text = "${model.playlistSize} трек${determingEndOfWord(model.playlistSize, "трек")}"
 
         Glide.with(itemView.context)
             .load(model.coverImageUri)

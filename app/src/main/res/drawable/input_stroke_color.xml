@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Цвет в фокусе (активное состояние) -->
-    <item android:state_focused="true" android:color="?attr/colorTertiaryFixed" />
+    <item android:state_focused="true" android:color="@color/blue1" />
 
     <!-- Цвет НЕ в фокусе (обычное состояние) -->
     <item android:color="?attr/colorTertiaryFixed" />

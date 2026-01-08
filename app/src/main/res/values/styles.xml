@@ -133,4 +133,15 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="CustomMaterialDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Цвет фона -->
+        <item name="android:background">@color/white</item>
+        <!-- Цвет текста заголовка и сообщения -->
+        <item name="colorOnSurface">@color/black</item>
+        <!-- Цвет кнопок -->
+        <item name="colorPrimary">@color/blue1</item>
+
+    </style>
+
+
 </resources>

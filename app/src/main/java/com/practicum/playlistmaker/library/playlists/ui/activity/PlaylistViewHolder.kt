@@ -21,7 +21,7 @@ class PlaylistViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     fun bind(model: Playlist) {
 
         playlistName.text = model.name
-        playlistSize.text = "${model.playlistSize.toString()} трек${determingEndOfWord(model.playlistSize)}"
+        playlistSize.text = "${model.playlistSize} трек${determingEndOfWord(model.playlistSize, "трек")}"
 
 
         Glide.with(itemView.context)

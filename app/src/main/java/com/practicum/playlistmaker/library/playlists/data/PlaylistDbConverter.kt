@@ -10,9 +10,9 @@ class PlaylistDbConverter (private val gson: Gson) {
     fun map(playlist: Playlist): PlaylistEntity {
         return PlaylistEntity(
             0,
-            playlist.name, // Название композиции
-            playlist.description, // Имя исполнителя
-            playlist.coverImageUri, // Продолжительность трека
+            playlist.name,
+            playlist.description,
+            playlist.coverImageUri,
             gson.toJson(playlist.listIds),
             playlist.listIds.size,
             LocalDateTime.now().toString()
@@ -21,9 +21,10 @@ class PlaylistDbConverter (private val gson: Gson) {
 
     fun map(playlist: PlaylistEntity): Playlist {
         return Playlist(
-            playlist.name, // Название композиции
-            playlist.description, // Имя исполнителя
-            playlist.coverImageUri, // Продолжительность трека
+            playlist.id,
+            playlist.name,
+            playlist.description,
+            playlist.coverImageUri,
             gson.fromJson(playlist.listIds, object : TypeToken<List<Int>>() {}.type),
             playlist.playlistSize)
 
@@ -31,4 +32,10 @@ class PlaylistDbConverter (private val gson: Gson) {
     fun map (listIds:  List<Int>) : String {
         return gson.toJson(listIds)
     }
+
+    fun mapFromJsonToList(listIds:  String) :  List<Int> {
+        return gson.fromJson(listIds, object : TypeToken<List<Int>>() {}.type)
+    }
+
+
 }

@@ -20,7 +20,7 @@ class PlaylistsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel by viewModel<PlaylistsViewModel>()
 
-    private var playlistAdapter: PlaylistAdapter = PlaylistAdapter()
+    private var playlistAdapter: PlaylistAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,10 +32,16 @@ class PlaylistsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.makePlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_libraryFragment_to_newPlaylistFragment)
         }
 
+
+        playlistAdapter = PlaylistAdapter { playlist ->
+            findNavController().navigate(R.id.action_libraryFragment_to_playlistFragment,
+                                        PlaylistFragment.createArgs(playlist.id))
+        }
 
         binding.recyclerPlaylists.layoutManager =
             GridLayoutManager(requireContext(), /*Количество столбцов*/ 2)
@@ -56,23 +62,18 @@ class PlaylistsFragment : Fragment() {
     }
     private fun showContent(playlists: List<Playlist>) {
         binding.apply {
-
             recyclerPlaylists.isVisible = true
             noPlaylistsFound.isVisible = false
-
-
         }
-
-        playlistAdapter.playlistList.clear()
-        playlistAdapter.playlistList.addAll(playlists)
-        playlistAdapter.notifyDataSetChanged()
+        playlistAdapter?.playlistList?.clear()
+        playlistAdapter?.playlistList?.addAll(playlists)
+        playlistAdapter?.notifyDataSetChanged()
     }
+
     private fun showEmpty() {
         binding.apply {
-
             recyclerPlaylists.isVisible = false
             noPlaylistsFound.isVisible = true
-
         }
     }
 

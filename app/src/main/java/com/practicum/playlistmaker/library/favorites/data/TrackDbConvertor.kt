@@ -36,4 +36,11 @@ class TrackDbConvertor {
                     track.previewUrl,
                     true)
     }
+
+    fun mapList(favoritesList: List<FavoritesEntity>): List<Track> {
+        return favoritesList.map { track -> map(track) }
+    }
+//    fun mapList(favoritesList: List<Track>): List<FavoritesEntity> {
+//        return favoritesList.map { track -> map(track) }
+//    }
 }

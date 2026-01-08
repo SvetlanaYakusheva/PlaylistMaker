@@ -7,15 +7,14 @@ import com.practicum.playlistmaker.library.playlists.domain.PlaylistInteractor
 import com.practicum.playlistmaker.library.playlists.domain.model.Playlist
 import kotlinx.coroutines.launch
 
-class NewPlaylistViewModel (
+open class NewPlaylistViewModel (
             private val playlistInteractor: PlaylistInteractor
 ): ViewModel() {
 
-    fun onCreateNewPlaylistButtonClicked(name: String, description: String, uri: Uri?) {
+    open fun onCreateNewPlaylistButtonClicked(name: String, description: String, uri: Uri?) {
         viewModelScope.launch {
             playlistInteractor
-                .addPlaylist(Playlist( name, description, uri.toString(), listOf(),0 ))
+                .addPlaylist(Playlist( 0, name, description, uri.toString(), listOf(),0 ))
         }
     }
-
 }

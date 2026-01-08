@@ -10,18 +10,14 @@ import com.practicum.playlistmaker.library.playlists.domain.PlaylistInteractor
 import com.practicum.playlistmaker.library.playlists.domain.model.Playlist
 import kotlinx.coroutines.launch
 
-class PlaylistsViewModel (private val playlistInteractor: PlaylistInteractor
+class PlaylistsViewModel (
+    private val playlistInteractor: PlaylistInteractor
 ): ViewModel() {
 
     private val stateLiveData = MutableLiveData<PlaylistsState>()
     fun observeState(): LiveData<PlaylistsState> = stateLiveData
 
     fun fillData() {
-
-//        viewModelScope.launch {
-//            playlistInteractor.deleteAllPlaylists()
-//        }
-
         viewModelScope.launch {
             playlistInteractor
                 .getPlaylistsList()
