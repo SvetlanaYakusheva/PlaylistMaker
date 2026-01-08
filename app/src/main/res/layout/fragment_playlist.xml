@@ -233,39 +233,20 @@
         
         <TextView
             android:id="@+id/share_button_bottomsheet"
-            android:layout_width="match_parent"
-            android:layout_height="61dp"
             android:text="@string/share_playlist"
             android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:fontFamily="@font/ys_display_regular"
-            android:textFontWeight="400"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSecondary"/>
 
+            style="@style/TextViewPlaylistFragmentStyle"/>
         <TextView
             android:id="@+id/edit_button_bottomsheet"
-            android:layout_width="match_parent"
-            android:layout_height="61dp"
             android:text="@string/edit_playlist"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:fontFamily="@font/ys_display_regular"
-            android:textFontWeight="400"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSecondary"/>
+
+            style="@style/TextViewPlaylistFragmentStyle"/>
         <TextView
             android:id="@+id/delete_button_bottomsheet"
-            android:layout_width="match_parent"
-            android:layout_height="61dp"
             android:text="@string/delete_playlist"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:fontFamily="@font/ys_display_regular"
-            android:textFontWeight="400"
-            android:textSize="16sp"
-            android:textColor="?attr/colorOnSecondary"/>
+
+            style="@style/TextViewPlaylistFragmentStyle"/>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -57,6 +57,7 @@ class PlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val behavior = BottomSheetBehavior.from(binding.playlistBottomSheet)
+        //расчет высоты bottomsheet относительно других view для конкретного экрана
         binding.upperLayout.post {
             val location = IntArray(2)
             binding.upperLayout.getLocationOnScreen(location)
@@ -125,9 +126,9 @@ class PlaylistFragment : Fragment() {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
         binding.menuButton.setOnClickListener {
-
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         }
+
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
