@@ -24,8 +24,9 @@ class FavoritesRepositoryImpl(
         val favoritesList = favoritesDatabase.favoritesDao().getFavorites()
         emit(convertFromFavoritesEntity(favoritesList))
     }
-    private fun convertFromFavoritesEntity(favoritesList: List<FavoritesEntity>): List<Track> {
-        return favoritesList.map { track -> trackDbConvertor.map(track) }
+    private suspend fun convertFromFavoritesEntity(favoritesList: List<FavoritesEntity>): List<Track> {
+        val listIdsFavorites = favoritesDatabase.favoritesDao().getFavoritesIds()
+        return favoritesList.map { track -> trackDbConvertor.map(track, listIdsFavorites) }
     }
 }
 

@@ -11,7 +11,7 @@ import java.io.Serializable
 class TrackInPlaylistAdapter (private val clickListener: TrackClickListener,
                               private val longClickListener: TrackClickListener): RecyclerView.Adapter<TrackViewHolder> (),
     Serializable {
-    var trackList: MutableList<Track> = mutableListOf()
+    val trackList: MutableList<Track> = mutableListOf()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
         return TrackViewHolder(view)

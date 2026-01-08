@@ -12,3 +12,5 @@ sealed class PlayerState( val progress: String) {
 
     class Paused(progress: String) : PlayerState(progress)
 }
+
+

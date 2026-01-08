@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.library.playlists.data.impl
 
 import androidx.room.withTransaction
 import com.practicum.playlistmaker.library.favorites.data.TrackDbConvertor
+import com.practicum.playlistmaker.library.favorites.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.library.playlists.data.PlaylistDbConverter
 import com.practicum.playlistmaker.library.playlists.data.db.PlaylistDatabase
 import com.practicum.playlistmaker.library.playlists.data.db.PlaylistEntity
@@ -10,6 +11,7 @@ import com.practicum.playlistmaker.library.playlists.domain.PlaylistRepository
 import com.practicum.playlistmaker.library.playlists.domain.model.Playlist
 import com.practicum.playlistmaker.search.domain.model.Track
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
@@ -18,6 +20,7 @@ class PlaylistRepositoryImpl(
     private val playlistDbConvertor: PlaylistDbConverter,
     private val summaryPlaylistDatabase: SummaryPlaylistDatabase,
     private val trackDbConvertor: TrackDbConvertor,
+    private val favoritesDatabase: FavoritesDatabase
 ) : PlaylistRepository {
     override suspend fun savePlaylist(playlist: Playlist) {
         playlistDatabase.playlistDao().insertPlaylist(playlistDbConvertor.map(playlist))
@@ -50,19 +53,25 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun getPlaylistById(playlistId: Int): Playlist {
-        return (playlistDbConvertor.map(playlistDatabase.playlistDao().getPlaylistById(playlistId)))
+        return playlistDbConvertor.map(
+                            playlistDatabase.playlistDao().getPlaylistById(playlistId))
     }
 
      override fun getPlaylistByIdFlow(playlistId: Int): Flow<Playlist> {
 
          return playlistDatabase.playlistDao().getPlaylistByIdLive(playlistId).map { entity ->
-
              playlistDbConvertor.map(entity)
          }
+             .distinctUntilChanged()
      }
 
      override fun getTracksFromPlaylist(ids: List<Int>): Flow<List<Track>> = flow {
-         val summaryPlaylist =trackDbConvertor.mapList(summaryPlaylistDatabase.summaryPlaylistDao().getAllTracks())
+         val listIdsFavorites = favoritesDatabase.favoritesDao().getFavoritesIds()
+         val summaryPlaylist =trackDbConvertor.mapList(
+                                             summaryPlaylistDatabase.summaryPlaylistDao().getAllTracks(),
+                                             listIdsFavorites)
+
+
          val summaryPlaylistMap = summaryPlaylist.associateBy { it.trackId }
 
          emit(ids.mapNotNull { summaryPlaylistMap[it] })

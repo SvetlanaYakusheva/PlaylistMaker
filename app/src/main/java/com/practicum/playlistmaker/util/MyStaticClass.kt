@@ -48,18 +48,4 @@ fun <T> debounce(delayMillis: Long,
         }
     }
 }
-fun determingEndOfWord(s: Int, word: String) : String {
-    when (word) {
-        "трек" -> {if ((s / 10 == 1) or (s % 10 == 0)) return "ов"
-                if (s % 10 == 1) return ""
 
-                if (s % 10 <= 4) return "а"
-                return "ов"}
-        "минут" -> {if ((s / 10 == 1) or (s % 10 == 0)) return ""
-            if (s % 10 == 1) return "а"
-
-            if (s % 10 <= 4) return "ы"
-            return ""}
-    }
-    return ""
-}

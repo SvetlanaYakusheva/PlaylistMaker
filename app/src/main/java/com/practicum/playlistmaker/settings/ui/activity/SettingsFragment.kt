@@ -27,6 +27,7 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.loadData()
         viewModel.observeState().observe(viewLifecycleOwner) {
             binding.themeSwitcher.isChecked = it
         }

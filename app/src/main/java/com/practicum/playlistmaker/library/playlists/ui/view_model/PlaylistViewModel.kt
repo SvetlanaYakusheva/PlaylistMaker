@@ -4,11 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.library.playlists.domain.PlaylistInteractor
+import com.practicum.playlistmaker.library.playlists.domain.ResourceProvider
 import com.practicum.playlistmaker.library.playlists.domain.model.Playlist
 import com.practicum.playlistmaker.library.playlists.ui.PlaylistState
 import com.practicum.playlistmaker.search.domain.model.Track
-import com.practicum.playlistmaker.util.determingEndOfWord
 import com.practicum.playlistmaker.util.getDateFormat
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -16,7 +17,8 @@ import java.util.Locale
 
 class PlaylistViewModel (
     private val playlistId: Int,
-    private val playlistInteractor: PlaylistInteractor
+    private val playlistInteractor: PlaylistInteractor,
+    private val resourceProvider: ResourceProvider
 ): ViewModel() {
 
     private var currentPlaylist: Playlist? = null
@@ -61,8 +63,10 @@ class PlaylistViewModel (
 
     fun onShareButtonClickEvent() {
         var playlistToShare = "${currentPlaylist?.name} " +
-                "\n${currentPlaylist?.description} " +
-                "\n${currentPlaylist?.playlistSize} трек${determingEndOfWord(currentPlaylist!!.playlistSize, "трек")}"
+                "\n${currentPlaylist?.description} \n" +
+                resourceProvider.getQuantityString(R.plurals.numberOfTracks, currentPlaylist!!.playlistSize, currentPlaylist!!.playlistSize)
+
+
         var number = 1
         for (track in currentTracks) {
             playlistToShare += "\n$number. ${track.artistName} - ${track.trackName} (${getDateFormat(track.trackTime)})"

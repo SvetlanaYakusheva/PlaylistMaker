@@ -22,7 +22,7 @@ class TrackDbConvertor {
         )
     }
 
-    fun map(track: FavoritesEntity): Track {
+    fun map(track: FavoritesEntity, listIdsFavorites: List<Int>): Track {
         return Track(
                     track.trackId,
                     track.trackName, // Название композиции
@@ -34,13 +34,15 @@ class TrackDbConvertor {
                     track.primaryGenreName, // название жанра
                     track.country, // страна исполнителя
                     track.previewUrl,
-                    true)
+                    checkIfTrackIsFavorite (track.trackId, listIdsFavorites))
+
     }
 
-    fun mapList(favoritesList: List<FavoritesEntity>): List<Track> {
-        return favoritesList.map { track -> map(track) }
+    fun mapList(favoritesList: List<FavoritesEntity>, listIdsFavorites: List<Int>): List<Track> {
+        return favoritesList.map { track -> map(track, listIdsFavorites) }
     }
-//    fun mapList(favoritesList: List<Track>): List<FavoritesEntity> {
-//        return favoritesList.map { track -> map(track) }
-//    }
+
+    private fun checkIfTrackIsFavorite(trackId : Int, listIdsFavorites: List<Int>) : Boolean {
+        return (trackId in listIdsFavorites)
+    }
 }

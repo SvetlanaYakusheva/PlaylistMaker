@@ -47,6 +47,7 @@ class EditPlaylistFragment : NewPlaylistFragment() {
             )
             findNavController().navigateUp()
         }
+        viewModel.fillData()
         viewModel.observeEditPlaylistState().observe(viewLifecycleOwner) {
             render(it)
         }

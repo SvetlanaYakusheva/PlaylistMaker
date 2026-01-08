@@ -27,7 +27,6 @@ import com.practicum.playlistmaker.newplaylist.ui.activity.EditPlaylistFragment
 import com.practicum.playlistmaker.player.ui.activity.PlayerFragment
 import com.practicum.playlistmaker.search.domain.model.Track
 import com.practicum.playlistmaker.util.debounce
-import com.practicum.playlistmaker.util.determingEndOfWord
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -97,7 +96,11 @@ class PlaylistFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope,
             false
         ) { track ->
-            showDialog({ viewModel.deleteTrackFromPlaylist(track) }, "Хотите удалить трек?", "msg", "Да", "Нет")
+            showDialog({ viewModel.deleteTrackFromPlaylist(track) },
+                        requireContext().getString(R.string.do_you_wanna_delete_track),
+                        "",
+                        requireContext().getString(R.string.yes),
+                        requireContext().getString(R.string.no))
         }
 
         trackAdapter = TrackInPlaylistAdapter (
@@ -113,7 +116,7 @@ class PlaylistFragment : Fragment() {
 
         binding.shareButton.setOnClickListener {
             if (trackAdapter?.trackList?.isEmpty() == true) {
-                Toast.makeText(requireContext(), "В этом плейлисте нет списка треков, которым можно поделиться", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), requireContext().getString(R.string.toast_no_tracks_in_playlist_to_share), Toast.LENGTH_LONG).show()
             } else {
                 viewModel.onShareButtonClickEvent()
             }
@@ -146,7 +149,7 @@ class PlaylistFragment : Fragment() {
 
         binding.shareButtonBottomsheet.setOnClickListener {
             if (trackAdapter?.trackList?.isEmpty() == true) {
-                Toast.makeText(requireContext(), "В этом плейлисте нет списка треков, которым можно поделиться", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), requireContext().getString(R.string.toast_no_tracks_in_playlist_to_share), Toast.LENGTH_LONG).show()
             } else {
                 viewModel.onShareButtonClickEvent()
             }
@@ -167,10 +170,12 @@ class PlaylistFragment : Fragment() {
             showDialog(
                 { viewModel.onDeleteButtonClickEvent()
                     findNavController().navigateUp()},
-                "Удалить плейлист",
-                "Вы уверены, что хотите удалить плейлист? «${binding.playlistName.text}»?",
-                "Удалить",
-                "Отмена"
+                requireContext().getString(R.string.delete_playlist),
+                requireContext().getString(R.string.are_you_sure_to_delete_playlistP1) +
+                        binding.playlistName.text +
+                        requireContext().getString(R.string.are_you_sure_to_delete_playlistP2),
+                requireContext().getString(R.string.delete),
+                requireContext().getString(R.string.cancel)
             )
 
 
@@ -194,8 +199,9 @@ class PlaylistFragment : Fragment() {
 
             playlistName.text = playlist.name
             playlistDescription.text = playlist.description
-            playlistDuration.text = "$duration минут${determingEndOfWord(duration.toInt(), "минут")}"
-            playlistSize.text = "${playlist.playlistSize} трек${determingEndOfWord(playlist.playlistSize,"трек")}"
+
+            playlistDuration.text = resources.getQuantityString(R.plurals.numberOfMinutes, duration.toInt(), duration.toInt())
+            playlistSize.text= resources.getQuantityString(R.plurals.numberOfTracks, playlist.playlistSize, playlist.playlistSize)
 
             recyclerPlaylist.isVisible = true
             yourPlaylistIsEmptyTextview.isVisible = false
@@ -205,9 +211,9 @@ class PlaylistFragment : Fragment() {
                 .centerCrop()
                 .placeholder(R.drawable.ic_placeholder_45)
                 .into(playlistInfoInMenu.playlistCover)
-            playlistInfoInMenu.playlistName.text = playlist.name
-            playlistInfoInMenu.playlistSize.text = "${playlist.playlistSize} трек${determingEndOfWord(playlist.playlistSize,"трек")}"
 
+            playlistInfoInMenu.playlistName.text = playlist.name
+            playlistInfoInMenu.playlistSize.text = resources.getQuantityString(R.plurals.numberOfTracks, playlist.playlistSize, playlist.playlistSize)
         }
 
         trackAdapter?.trackList?.clear()
@@ -224,8 +230,10 @@ class PlaylistFragment : Fragment() {
 
             playlistName.text = playlist.name
             playlistDescription.text = playlist.description
-            playlistDuration.text = "0 минут"
-            playlistSize.text = "${playlist.playlistSize} трек${determingEndOfWord(playlist.playlistSize, "трек")}"
+            playlistDuration.text = resources.getQuantityString(R.plurals.numberOfMinutes, 0, 0)
+
+
+            playlistSize.text = resources.getQuantityString(R.plurals.numberOfTracks, playlist.playlistSize, playlist.playlistSize)
             recyclerPlaylist.isVisible = false
             yourPlaylistIsEmptyTextview.isVisible = true
 
@@ -235,7 +243,8 @@ class PlaylistFragment : Fragment() {
                 .placeholder(R.drawable.ic_placeholder_45)
                 .into(playlistInfoInMenu.playlistCover)
             playlistInfoInMenu.playlistName.text = playlist.name
-            playlistInfoInMenu.playlistSize.text = "${playlist.playlistSize} трек${determingEndOfWord(playlist.playlistSize,"трек")}"
+
+            playlistInfoInMenu.playlistSize.text = resources.getQuantityString(R.plurals.numberOfTracks, playlist.playlistSize, playlist.playlistSize)
         }
         trackAdapter?.trackList?.clear()
         trackAdapter?.notifyDataSetChanged()

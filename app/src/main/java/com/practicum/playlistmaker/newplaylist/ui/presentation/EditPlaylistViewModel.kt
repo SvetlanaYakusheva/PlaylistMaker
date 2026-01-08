@@ -11,14 +11,11 @@ import kotlinx.coroutines.launch
 
 class EditPlaylistViewModel(private val playlistId: Int, private val playlistInteractor: PlaylistInteractor) : NewPlaylistViewModel(playlistInteractor) {
 
-    init {
-        fillData()
-    }
 
     private val editPlaylistState = MutableLiveData<EditPlaylistState>()
     fun observeEditPlaylistState(): LiveData<EditPlaylistState> = editPlaylistState
 
-    private fun fillData()  {
+    fun fillData()  {
          viewModelScope.launch {
              processResult(playlistInteractor.getPlaylistById(playlistId))
         }
