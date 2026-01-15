@@ -12,9 +12,6 @@ class SettingsViewModel(
 ) : ViewModel() {
     private val stateLiveData = MutableLiveData<Boolean>()
 
-    init {
-        loadData()
-    }
 
     fun observeState(): LiveData<Boolean> = stateLiveData
 
@@ -27,7 +24,7 @@ class SettingsViewModel(
         }
 
     }
-    private fun loadData() {
+    fun loadData() {
         stateLiveData.value = settingsInteractorImpl.getThemeState(false)
     }
 

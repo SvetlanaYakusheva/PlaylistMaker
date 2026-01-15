@@ -7,6 +7,8 @@ import com.practicum.playlistmaker.library.favorites.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.library.playlists.data.PlaylistDbConverter
 import com.practicum.playlistmaker.library.playlists.data.db.PlaylistDatabase
 import com.practicum.playlistmaker.library.playlists.data.db.SummaryPlaylistDatabase
+import com.practicum.playlistmaker.library.playlists.data.impl.AndroidResourceProvider
+import com.practicum.playlistmaker.library.playlists.domain.ResourceProvider
 import com.practicum.playlistmaker.search.data.NetworkClient
 import com.practicum.playlistmaker.search.data.network.ITunesApi
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -37,6 +39,7 @@ val dataModule = module {
       RetrofitNetworkClient(get())
     }
 
+
     single {
         Room.databaseBuilder(androidContext(), FavoritesDatabase::class.java, "database.db")
             .build()
@@ -53,6 +56,10 @@ val dataModule = module {
 
     single<PlaylistDbConverter> {
         PlaylistDbConverter(get()) }
+
+    single<ResourceProvider> {
+        AndroidResourceProvider(androidContext())
+    }
 }
 
 const val iTunesBaseUrl = "https://itunes.apple.com"

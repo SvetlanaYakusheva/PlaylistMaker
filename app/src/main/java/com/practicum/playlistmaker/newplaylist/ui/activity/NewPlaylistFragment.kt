@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.newplaylist.ui.activity
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
@@ -8,6 +10,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.AttrRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -36,10 +40,10 @@ import com.practicum.playlistmaker.newplaylist.ui.presentation.NewPlaylistViewMo
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class NewPlaylistFragment: Fragment() {
+open class NewPlaylistFragment: Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel by viewModel<NewPlaylistViewModel>()
+    open val binding get() = _binding!!
+    open val viewModel by viewModel<NewPlaylistViewModel>()
 
     private var textWatcher: TextWatcher? = null
     lateinit var confirmDialog: MaterialAlertDialogBuilder
@@ -82,7 +86,6 @@ class NewPlaylistFragment: Fragment() {
             }
         })
 
-
         binding.backButton.setOnClickListener {
             if (!binding.inputEditTextPlaylistName.text.isNullOrEmpty() or !binding.inputEditTextPlaylistDescription.text.isNullOrEmpty() or (imageCoverUri != null)) {
                 confirmDialog.show()
@@ -90,6 +93,34 @@ class NewPlaylistFragment: Fragment() {
                 findNavController().navigateUp()
             }
         }
+
+
+        binding.inputEditTextPlaylistName.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.TextInputLayoutPlaylistName.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColor(R.color.blue1))
+            } else if (binding.inputEditTextPlaylistName.text.isNullOrEmpty()) {
+                binding.TextInputLayoutPlaylistName.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColorFromAttr(com.google.android.material.R.attr.colorOnSecondary))
+            } else {
+                binding.TextInputLayoutPlaylistName.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColorFromAttr(com.google.android.material.R.attr.colorTertiaryFixed))
+            }
+        }
+
+        binding.inputEditTextPlaylistDescription.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.TextInputLayoutPlaylistDescription.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColor(R.color.blue1))
+            } else if (binding.inputEditTextPlaylistDescription.text.isNullOrEmpty()) {
+                binding.TextInputLayoutPlaylistDescription.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColorFromAttr(com.google.android.material.R.attr.colorOnSecondary))
+            } else {
+                binding.TextInputLayoutPlaylistDescription.defaultHintTextColor =
+                    ColorStateList.valueOf(requireContext().getColorFromAttr(com.google.android.material.R.attr.colorTertiaryFixed))
+            }
+        }
+
 
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -99,7 +130,8 @@ class NewPlaylistFragment: Fragment() {
                 binding.createPlaylistButton.isEnabled = !s.isNullOrEmpty()
 
             }
-            override fun afterTextChanged(s: Editable?) { }
+            override fun afterTextChanged(s: Editable?) {
+            }
         }
         binding.inputEditTextPlaylistName.addTextChangedListener(textWatcher)
 
@@ -155,7 +187,9 @@ class NewPlaylistFragment: Fragment() {
                 imageCoverUri
             )
             findNavController().navigateUp()
-            Toast.makeText(requireContext(), "Плейлист ${binding.inputEditTextPlaylistName.text} создан", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(),
+                "Плейлист ${binding.inputEditTextPlaylistName.text} создан",
+                Toast.LENGTH_LONG).show()
 
         }
     }
@@ -169,7 +203,8 @@ class NewPlaylistFragment: Fragment() {
 
     private fun saveImageToPrivateStorage(uri: Uri) {
         //создаём экземпляр класса File, который указывает на нужный каталог
-        val filePath = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "myalbum")
+        val filePath =
+            File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "myalbum")
         //создаем каталог, если он не создан
         if (!filePath.exists()){
             filePath.mkdirs()
@@ -185,4 +220,9 @@ class NewPlaylistFragment: Fragment() {
             .decodeStream(inputStream)
             .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
     }
+}
+fun Context.getColorFromAttr(@AttrRes attr: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attr, typedValue, true)
+    return typedValue.data
 }

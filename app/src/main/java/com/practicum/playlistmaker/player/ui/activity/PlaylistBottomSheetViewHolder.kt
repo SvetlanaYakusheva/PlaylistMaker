@@ -9,7 +9,6 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.library.playlists.domain.model.Playlist
-import com.practicum.playlistmaker.util.determingEndOfWord
 import com.practicum.playlistmaker.util.dpToPx
 
 class PlaylistBottomSheetViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -21,8 +20,8 @@ class PlaylistBottomSheetViewHolder (itemView: View): RecyclerView.ViewHolder(it
     fun bind(model: Playlist) {
 
         playlistName.text = model.name
-        playlistSize.text = "${model.playlistSize} трек${determingEndOfWord(model.playlistSize)}"
-
+        //playlistSize.text = "${model.playlistSize} трек${determingEndOfWord(model.playlistSize, "трек")}"
+        playlistSize.text = itemView.context.resources.getQuantityString(R.plurals.numberOfTracks, model.playlistSize, model.playlistSize)
 
         Glide.with(itemView.context)
             .load(model.coverImageUri)

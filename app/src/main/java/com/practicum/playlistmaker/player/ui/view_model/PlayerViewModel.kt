@@ -141,18 +141,18 @@ class PlayerViewModel (
     }
 
 
-     fun onPlaylistClicked(track: Track, playlist: Playlist) {
-         if (track.trackId in playlist.listIds) {
-             addToPlaylistState.value = Pair(false, playlist.name)
+    fun onPlaylistClicked(track: Track, playlist: Playlist) {
+        if (track.trackId in playlist.listIds) {
+            addToPlaylistState.value = Pair(false, playlist.name)
         } else {
             viewModelScope.launch {
                 playlistInteractor
                     .addTrackToPlaylist(track, playlist)
             }
 
-             addToPlaylistState.value = Pair(true, playlist.name)
-             //обновляем в BottomSheet отражаемое количество треков в плейлисте после добавления
-             fillData()
+            addToPlaylistState.value = Pair(true, playlist.name)
+            //обновляем в BottomSheet отражаемое количество треков в плейлисте после добавления
+            fillData()
         }
     }
 

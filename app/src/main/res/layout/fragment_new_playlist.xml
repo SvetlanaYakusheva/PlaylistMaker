@@ -27,6 +27,7 @@
         />
 
     <TextView
+        android:id="@+id/new_playlist_fragment_title"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         app:layout_constraintStart_toEndOf="@id/back_button"
@@ -69,11 +70,12 @@
         android:hint="@string/name"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
 
-        android:textColorHint="?attr/colorOnSecondary"
+
         android:textColor="?attr/colorOnSecondary"
         app:boxStrokeColor="@drawable/input_stroke_color"
         app:boxStrokeWidth="1dp"
-        app:hintTextColor="?attr/colorTertiaryFixed"
+        app:hintTextColor="@color/blue1"
+        android:textColorHint="?attr/colorOnSecondary"
 
         android:textCursorDrawable="@drawable/cursor_blue">
 
@@ -95,20 +97,25 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
 
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
         android:hint="@string/description"
 
-        android:textColorHint="?attr/colorOnSecondary"
+
         android:textColor="?attr/colorOnSecondary"
         app:boxStrokeColor="@drawable/input_stroke_color"
         app:boxStrokeWidth="1dp"
-        app:hintTextColor="?attr/colorTertiaryFixed"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:textCursorDrawable="@drawable/cursor_blue">
 
+        app:hintTextColor="@color/blue1"
+        android:textColorHint="?attr/colorOnSecondary"
+
+        android:textCursorDrawable="@drawable/cursor_blue"
+        >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/inputEditTextPlaylistDescription"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
